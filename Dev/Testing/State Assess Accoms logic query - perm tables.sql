@@ -74,7 +74,12 @@ go
 
 create view LEGACYSPED.LOGIC_EOTestParticipation
 as
-select t.TestGroup, t.GroupYNnaDesc, t.AltYNnaDesc, t.TestYNDesc, t.ConditionsDesc, Participation = p.ParticipationType
+select t.TestGroup, 
+	t.GroupYNna, t.GroupYNnaDesc, 
+	t.AltYNna, t.AltYNnaDesc, 
+	t.TestYN, t.TestYNDesc, 
+	t.Conditions, t.ConditionsDesc, 
+	Participation = p.ParticipationType
 from (
 select TestGroup, EOTestCode, 
 	GroupYNna = tg.num, AltYNna = alt.num, TestYN = tkt.num, Conditions = cnd.num,
@@ -122,6 +127,8 @@ select TestGroup, EOTestCode,
 						cnd.num -- 1 Std, 2 Std w/Accom
 					when 2 then -- ELDA N
 						3 -- non-std
+					when 0 then
+						NULL
 					else -- -- ELDA NA
 						5 -- Not in group
 					end -- case 7
@@ -147,10 +154,11 @@ cross join LEGACYSPED.SCAltSelection alt
 cross join LEGACYSPED.TakingTest tkt
 cross join LEGACYSPED.ConditionsSelection cnd
 -- there is a cleaner way to assure logical combinations, but for sake of time we'll just exclude some invalid or unimportant ones
-where not (alt.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
+where 1=1
+and not (alt.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
 and not (t.TestGroup = 'ELDA' and cnd.num = 3) -- There is no "non-standard" condition for ELDA
-and not (t.TestGroup in ('ELDA', 'GTTP') and tg.num <> 1) -- This is not a test group, we just pretend it is
-and not (t.TestGroup in ('ELDA', 'GTTP') and alt.num <> 0) -- This is not a test group, we just pretend it is
+--and not (t.TestGroup in ('ELDA', 'GTTP') and tg.num <> 1) -- This is not a test group, we just pretend it is
+--and not (t.TestGroup in ('ELDA', 'GTTP') and alt.num <> 0) -- This is not a test group, we just pretend it is
 and not (alt.Num = 1 and t.EOTestCode = 'AC7') -- there is no Writing for the SC Alt
 ) t
 left join LEGACYSPED.StateDistrictParticipationDef p on t.Participation = p.ParticipationTypeCode
@@ -161,7 +169,12 @@ where 1=1
 --and p.ParticipationType = 'Standard'
 -- and p.ParticipationType is null
 --and GroupYNna <> 1
-group by t.TestGroup, t.GroupYNnaDesc, t.AltYNnaDesc, t.TestYNDesc, t.ConditionsDesc, p.ParticipationType
+group by t.TestGroup, 
+	t.GroupYNna, t.GroupYNnaDesc, 
+	t.AltYNna, t.AltYNnaDesc, 
+	t.TestYN, t.TestYNDesc, 
+	t.Conditions, t.ConditionsDesc, 
+	p.ParticipationType
 -- order by 6, 2, 3, 4
 go
 
