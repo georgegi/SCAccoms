@@ -102,20 +102,24 @@ cross join @tgdesc tgd
 cross join @altdesc altd 
 cross join @tktdesc tktd 
 cross join @cnddesc cndd 
+-- there is a cleaner way to assure logical combinations, but for sake of time we'll just exclude some invalid or unimportant ones
+where not (altd.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
+and not (t.TestGroup = 'ELDA' and cndd.num = 3) -- There is no "non-standard" condition for ELDA
+and not (t.TestGroup in ('ELDA', 'GTTP') and tgd.num <> 1) -- This is not a test group, we just pretend it is
+and not (t.TestGroup in ('ELDA', 'GTTP') and altd.num <> 0) -- This is not a test group, we just pretend it is
 
-where not (altd.num = 1 and TestGroup <> 'PASS') -- example of an expected combination (er, excluding unexpected combinations)
-and not (t.TestGroup = 'ELDA' and cndd.num = 3)
 ) t
 left join LEGACYSPED.StateDistrictParticipationDef p on t.Participation = p.ParticipationTypeCode
 where 1=1
 -- TakingTestGroupDesc = 'Yes'
-and t.GroupYNna = 1
---and t.TestGroup = 'EOC'
-and p.ParticipationType = 'Non-standard'
+-- and t.GroupYNna = 1
+--and t.TestGroup in ('GTTP', 'ELDA')
+--and p.ParticipationType = 'Standard'
 -- and p.ParticipationType is null
+--and GroupYNna <> 1
 group by t.TestGroup, t.GroupYNnaDesc, t.AltYNnaDesc, t.TestYNDesc, t.ConditionsDesc, p.ParticipationType
 
-order by 4, 5
+order by 6, 5
 
 
 
