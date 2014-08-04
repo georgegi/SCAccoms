@@ -1,10 +1,135 @@
 -- '643808237000' grade 11
 -- '189770934100' grade 02
-
+-- '159480484600' grade 09
 -- select * from x_datateam.FindProgramData
 
 
-declare @s varchar(20) ; set @s = '155563610500'
+
+-- delcare and populate table variables mimicking the remote tables so I can take advantage of intellisense (not available over linked server)
+declare @IEPAccomModTbl table (
+GStudentID uniqueidentifier	NOT NULL,
+IEPAccomSeq bigint	NOT NULL,
+CreateID nvarchar(40),
+CreateDate datetime,
+ModifyID nvarchar(40),
+ModifyDate datetime,
+DeleteID nvarchar(40),
+DeleteDate datetime,
+Del_Flag bit)
+
+declare @IEPAccomModTbl_SC table (IEPAccomSeq bigint	NOT NULL,
+BSAP int,
+BSAPRead bit,
+BSAPMath bit,
+BSAPWriting bit,
+HSAP int,
+HSAPEnglish bit,
+HSAPAlt int,
+PACT int,
+PACTEnglish bit,
+PACTEnglishGrade nvarchar(80),
+PACTMath bit,
+PACTMathGrade nvarchar(80),
+PACTSocStudies bit,
+PACTSocStudiesGrade nvarchar(80),
+PACTScience bit,
+PACTScienceGrade nvarchar(80),
+PACTAlt int,
+SCRA int,
+SCRAAlt int,
+DistAssess int,
+DistAssessTitle nvarchar(160),
+AltAssess ntext,
+EOCTest int,
+EOCTitles ntext,
+AccomMod int,
+AccomModSheet ntext,
+NormRef ntext,
+CreateID nvarchar(40),
+CreateDate datetime,
+ModifyID nvarchar(40),
+ModifyDate datetime,
+DeleteID nvarchar(40),
+Deletedate datetime,
+Del_Flag bit	NOT NULL,
+HSAPMath bit,
+MAP int,
+Other int,
+OtherDesc nvarchar(160),
+HSAPStandard int,
+HSAPEnglishAccom ntext,
+HSAPMathAccom ntext,
+HSAPAltEnglish bit,
+HSAPAltMath bit,
+PACTStandard int,
+PACTEnglishAccom ntext,
+PACTMathAccom ntext,
+PACTSocialAccom ntext,
+PACTScienceAccom ntext,
+PACTAltEnglish bit,
+PACTAltMath bit,
+PACTAltSocial bit,
+PACTAltScience bit,
+ELDA int,
+ELDAStandard int,
+ELDAAccom ntext,
+EOCAlgMath bit,
+EOCAlgMathAccom ntext,
+EOCBiology bit,
+EOCBioAccom ntext,
+EOCEnglish bit,
+EOCEnglishAccom ntext,
+EOCPhysicalSci bit,
+EOCPhysicalAccom ntext,
+DistAssessAccom ntext,
+EOCStandard int,
+HSAPEnglishCond int,
+HSAPMathCond int,
+PACTEnglishCond int,
+PACTMathCond int,
+PACTSocialCond int,
+PACTScienceCond int,
+EOCMathCond int,
+EOCBiologyCond int,
+EOCEnglishCond int,
+EOCPhysicalSciCond int,
+EOCUSHistory bit,
+EOCUSHistoryCond int,
+SCAltReason ntext,
+HSAPEngTestTaken int,
+HSAPMathTestTaken int,
+EOCUSHistTestTaken int,
+PACTAltAgeQual int,
+SCRAAltReason ntext,
+PASSWriting bit,
+PASSWritingCond int,
+PartTesting nvarchar(8),
+DuringEffDates nvarchar(8),
+SubjAreaAccom ntext,
+GTTP int,
+GTTPAccom ntext,
+GTTPData ntext,
+SB int,
+SBELA bit,
+SBELACond int,
+SBMath bit,
+SBMathCond int)
+
+insert @IEPAccomModTbl 
+select a.*
+from LEGACYSPED.MAP_IEPStudentRefID m 
+join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl a on m.StudentRefID = a.GStudentID -- notice that intellisense not working here. That's why we use table variables, to leverage intellisense on queries below
+join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
+
+insert @IEPAccomModTbl_SC 
+select a2.*
+from LEGACYSPED.MAP_IEPStudentRefID m 
+join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl a on m.StudentRefID = a.GStudentID
+join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------
 
 select ParticipationTypeCode, ParticipationType from LEGACYSPED.StateDistrictParticipationDef p where ParticipationTypeCode <> 4 order by ParticipationTypeCode
 
@@ -16,21 +141,31 @@ left join GradeLevel gmax on td.MaxGradeID = gmax.ID
 where EnrichTestName not like 'SC PASS%' 
 order by EnrichTestName
 
+
+declare @s varchar(20) ; set @s = '159480484600'
+
+
+
 ;
 with participationCTE
 as (
-select m.StudentRefID, s.StudentLocalID, s.Firstname, s.Lastname, GradeLevel = stu.GradeLevelCode,
-	m.IEPRefID, a2.IEPAccomSeq,
-	a2.PACT, -- PACT = PASS
-	a2.PACTAlt,
-		a2.PACTEnglish, a2.PACTEnglishCond,
-		a2.PACTMath, a2.PACTMathCond,
-		a2.PACTSocStudies, a2.PACTSocialCond,
-		a2.PACTScience, a2.PACTScienceCond,
-		a2.PASSWriting, a2.PASSWritingCond,
+select m.IEPRefID, a2.IEPAccomSeq,
+	PACT = isnull(a2.PACT,0), -- PACT = PASS
+	PACTAlt = isnull(a2.PACTAlt,0),
+		a2.PACTEnglish, PACTEnglishCond = isnull(a2.PACTEnglishCond,0),
+		a2.PACTMath, PACTMathCond = isnull(a2.PACTMathCond,0),
+		a2.PACTSocStudies, PACTSocialCond = isnull(a2.PACTSocialCond,0),
+		a2.PACTScience, PACTScienceCond = isnull(a2.PACTScienceCond,0),
+		a2.PASSWriting, PASSWritingCond = isnull(a2.PASSWritingCond,0),
 	--
-	a2.ELDA, a2.ELDAStandard,
-	a2.GTTP, GTTPAccom = convert(varchar(max), a2.GTTPAccom), 
+	ELDA = isnull(a2.ELDA,0), ELDAStandard = isnull(a2.ELDAStandard,0),
+	GTTP = isnull(a2.GTTP,0), 
+		-- here we will derive a value for Std or Std w/ Accom 
+		GTTPCond = case when isnull(convert(varchar(max), a2.GTTPAccom),'') in ('', 'NA', 'N/A', 'None', 'No') -- check for either no text or text that indicates no accoms
+			then 1 -- standard
+			else 2 -- standard w/ accoms, because there is text in the accoms text box
+		end,
+		GTTPAccom = convert(varchar(max), a2.GTTPAccom), 
 	--
 	a2.DistAssess, a2.DistAssessTitle, a2.AltAssess,
 	--
@@ -41,288 +176,168 @@ select m.StudentRefID, s.StudentLocalID, s.Firstname, s.Lastname, GradeLevel = s
 		a2.EOCBiology, a2.EOCBiologyCond,
 		a2.EOCUSHistory, a2.EOCUSHistoryCond
 from LEGACYSPED.MAP_IEPStudentRefID m 
-	join LEGACYSPED.Student s on m.StudentRefID = s.StudentRefID
 --join LEGACYSPED.EO_IEPAccomModTbl_RAW a on m.StudentRefID = a.GStudentID
 --join LEGACYSPED.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
 --join LEGACYSPED.Student stu on m.StudentRefID = stu.StudentRefID
-join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl a on m.StudentRefID = a.GStudentID
-join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
-join LEGACYSPED.Student stu on m.StudentRefID = stu.StudentRefID
-
+join @IEPAccomModTbl a on m.StudentRefID = a.GStudentID
+join @IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
 -- where /* a2.PACT = 2 and */ a2.GTTP = 1
 )
---PASS 
--- Note: Alternate pass applies to ELA, Math, Social Studies and Science, but not writing. If they take one Alt, they take all 4.
------ English language arts (ELA)
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC3', TestYN = c.PACT, Alternate = c.PActAlt, -- PASS 1 Yes, 2 No (look at Alt), 3 NA
---	CourseYN = c.PACTEnglish, -- 1 Yes, 0 No (checkbox)
---	Condition = c.PACTEnglishCond, -- 1 Std, 2 Std w/Accom, 3 Non-std, w/Mod
---	Participation = 
---	case c.PACT	
---		when 2 then -- PASS No checked
---			case c.PACTAlt -- look at the Alt selection
---				when 1 then 4 -- If Alt = Yes then Enrich Alternate
---				else 5 -- If Alt No or NA, then Enrich Not in group
---			end
---		when 1 then -- PASS Yes checked
---			case isnull(c.PACTEnglish,0) -- look at the Enlgish selection
---				when 0 then 5 -- If English has not been checked, then Enrich Not in group
---				else c.PactEnglishCond -- Otherwise, use the value of the radio button (1 Std, 2 Std w/Accom, 3 Non-standard) -- shouldn't see non-standard?  GIGO
---			end
---		else 5
---	end
---from participationCTE c
---where c.StudentLocalID = @s
 
---union all
+
+-- simulate a view
+
+select 
+	s.StudentLocalID, s.Firstname, s.Lastname, s.GradeLevelCode,
+	stp.IepRefID, stp.IEPAccomSeq, 
+	stp.TestGroup, 
+	stp.EOTestCode, 
+	GroupSelection = logic.GroupYNnaDesc, 
+	AltSelection = logic.AltYNnaDesc, 
+	TestYN = logic.TestYNDesc,
+	Conditions = logic.ConditionsDesc,
+	Logic.Participation
+from (
+
+-- PASS
+----- English language arts (ELA)
+-- Note: Alternate pass applies to ELA, Math, Social Studies and Science, but not writing. If they take one Alt, they take all 4.
+select c.IepRefID, c.IEPAccomSeq, TestGroup = 'PASS', EOTestCode = 'AC3', GroupYNna = c.PACT, AltYNna = c.PActAlt, TestYN = c.PACTEnglish,  Conditions = c.PACTEnglishCond
+from participationCTE c
+
+union all
 
 ------- Mathematics
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC4', TestYN = c.PACT, Alternate = c.PActAlt, -- PASS 1 Yes, 2 No (look at Alt), 3 NA
---	CourseYN = c.PACTMath, -- 1 Yes, 0 No (checkbox)
---	Condition = c.PACTMathCond, -- 1 Std, 2 Std w/Accom, 3 Non-std, w/Mod
---	Participation = 
---	case c.PACT	
---		when 2 then -- PASS No checked
---			case c.PACTAlt -- look at the Alt selection
---				when 1 then 4 -- If Alt = Yes then Enrich Alternate
---				else 5 -- If Alt No or NA, then Enrich Not in group
---			end
---		when 1 then -- PASS Yes checked
---			case isnull(c.PACTMath,0) -- look at the Math selection
---				when 0 then 5 -- If Math has not been checked, then Enrich Not in group
---				else c.PACTMathCond -- Otherwise, use the value of the radio button (1 Std, 2 Std w/Accom, 3 Non-standard) -- shouldn't see non-standard?  GIGO
---			end
---		else 5
---	end
---from participationCTE c
---where c.StudentLocalID = @s
+select c.IepRefID, c.IEPAccomSeq, 'PASS', 'AC4', c.PACT, c.PActAlt, c.PACTMath, c.PACTMathCond 
+from participationCTE c
 
+union all
 
---union all
+----- Social studies
+select c.IepRefID, c.IEPAccomSeq, 'PASS', 'AC5', c.PACT, c.PActAlt, c.PACTSocStudies, c.PACTSocialCond
+from participationCTE c
 
-------- Social studies
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC5', TestYN = c.PACT, Alternate = c.PActAlt, -- PASS 1 Yes, 2 No (look at Alt), 3 NA
---	CourseYN = c.PACTSocStudies, -- 1 Yes, 0 No (checkbox)
---	Condition = c.PACTSocialCond, -- 1 Std, 2 Std w/Accom, 3 Non-std, w/Mod
---	Participation = 
---	case c.PACT	
---		when 2 then -- PASS No checked
---			case c.PACTAlt -- look at the Alt selection
---				when 1 then 4 -- If Alt = Yes then Enrich Alternate
---				else 5 -- If Alt No or NA, then Enrich Not in group
---			end
---		when 1 then -- PASS Yes checked
---			case isnull(c.PACTSocStudies,0) -- look at the SocStudies selection
---				when 0 then 5 -- If SocStudies has not been checked, then Enrich Not in group
---				else c.PACTSocialCond -- Otherwise, use the value of the radio button (1 Std, 2 Std w/Accom, 3 Non-standard) -- shouldn't see non-standard?  GIGO
---			end
---		else 5
---	end
---from participationCTE c
---where c.StudentLocalID = @s
+union all
 
---union all
+----- Science
+select c.IepRefID, c.IEPAccomSeq, 'PASS', 'AC6', c.PACT, c.PActAlt, c.PACTScience, c.PACTScienceCond
+from participationCTE c
 
-------- Science
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC6', TestYN = c.PACT, Alternate = c.PActAlt, -- PASS 1 Yes, 2 No (look at Alt), 3 NA
---	CourseYN = c.PACTScience, -- 1 Yes, 0 No (checkbox)
---	Condition = c.PACTScienceCond, -- 1 Std, 2 Std w/Accom, 3 Non-std, w/Mod
---	Participation = 
---	case c.PACT	
---		when 2 then -- PASS No checked
---			case c.PACTAlt -- look at the Alt selection
---				when 1 then 4 -- If Alt = Yes then Enrich Alternate
---				else 5 -- If Alt No or NA, then Enrich Not in group
---			end
---		when 1 then -- PASS Yes checked
---			case isnull(c.PACTScience,0) -- look at the Science selection
---				when 0 then 5 -- If Science has not been checked, then Enrich Not in group
---				else c.PACTScienceCond -- Otherwise, use the value of the radio button (1 Std, 2 Std w/Accom, 3 Non-standard) -- shouldn't see non-standard?  GIGO
---			end
---		else 5
---	end
---from participationCTE c
---where c.StudentLocalID = @s
+union all
 
---union all
+--- Writing --------------------------------------------- DOES NOT APPLY TO ALTERNATE. Alternate is for students that use pictures and objects, so they can't write at all.
+select c.IepRefID, c.IEPAccomSeq, 'PASS', 'AC7', c.PACT, c.PActAlt, c.PASSWriting, c.PASSWritingCond
+from participationCTE c
 
-------- Writing --------------------------------------------- DOES NOT APPLY TO ALTERNATE. Alternate is for students that use pictures and objects, so they can't write at all.
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC6', TestYN = c.PACT, Alternate = c.PActAlt, -- PASS 1 Yes, 2 No (look at Alt), 3 NA
---	CourseYN = c.PASSWriting, -- 1 Yes, 0 No (checkbox)
---	Condition = c.PASSWritingCond, -- 1 Std, 2 Std w/Accom, 3 Non-std, w/Mod
---	Participation = 
---	case c.PACT	
---		when 2 then -- PASS No checked
---			5 -- There is no PASS Alternate test for Writing, Per Lori James, so always make this Not in group for PASS No
---		when 1 then -- PASS Yes checked
---			case isnull(c.PASSWriting,0) -- look at the Writing selection
---				when 0 then 5 -- If Writing has not been checked, then Enrich Not in group
---				else c.PASSWritingCond -- Otherwise, use the value of the radio button (1 Std, 2 Std w/Accom, 3 Non-standard) -- shouldn't see non-standard?  GIGO
---			end
---		else 5
---	end
---from participationCTE c
---where c.StudentLocalID = @s
+union all
 
-
---union all
-
---------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
 --                                          Page 2
 --------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
 
---c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
-	-- EOTestCode, TestYN, Alternate, CourseYN, Condition, Participation
-
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, EOTestCode = 'AC14', -- ELDA
---	TestYN = case isnull(c.ELDA, 0) when 1 then 1 when 2 then 1 else 0 end, -- simulate the EOC radio buttons
---	Alternate = 0,
---	CourseYN = cast(NULL as bit), -- does not apply here, so we won't try
---	Condition = case isnull(c.ELDA, 0) when 2 then 3 else c.ELDAStandard end, -- simulate the EOC radio buttons -- 1 = Standard or 2 = Std w/ Accom
---	Participation = 
---		case isnull(c.ELDA, 0)
---			when 2 then 3
---			when 3 then 5
---			when 0 then 5
---			else c.ELDAStandard -- 1 = Standard, 2 = Std w/ Accom
---		end
---from participationCTE c
---where c.StudentLocalID = @s
-
---union all
-
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
---	EOTestCode = 'GTTP',
---	TestYN = case isnull(c.GTTP, 0) when 1 then 1 when 2 then 1 else 0 end,
---	CourseYN = c.GTTP, 
---	Condition = case when isnull(c.GTTPAccom,'') in ('', 'NA', 'N/A', 'None', 'No') then 0 -- converted GTTPAccom in the CTE
---				else 1
---			end, 
---	Participation = 
---	case isnull(c.GTTP,0)
---		when 2 then 3
---		when 3 then 5
---		when 0 then 5
---		when 1 then
---			case when isnull(c.GTTPAccom,'') in ('', 'NA', 'N/A', 'None', 'No') then 1 -- converted GTTPAccom in the CTE
---				else 2
---			end
---	end
---from participationCTE c
---where c.StudentLocalID = @s
-
---union all
-
---c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
-	-- EOTestCode, TestYN, Alternate, CourseYN, Condition, Participation
-
-
-
------ algebra
-select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
-	EOTestCode = 'AC8',
-	TestYN = c.EOCTest, Course = c.EOCAlgMath, Condition = c.EOCMathCond, 
-	Participation = 
-		case c.EOCTest when 1 then
-			case isnull(c.EOCAlgMath,0) when 1 then
-				case isnull(c.EOCMathCond,0) 
-					when 0 then 5 -- not in group
-					else c.EOCMathCond
-				end
-			else 5
-			end
-		else 5
-		end
+-- ELDA
+select c.IepRefID, c.IEPAccomSeq, 'ELDA', 'AC14', 
+	GroupYNna = isnull(c.ELDA, 0), -- simulate the EOC radio buttons
+	AltYNna = 0,
+	TestYN = case isnull(c.ELDA, 0) when 1 then 1 when 2 then 1 else 0 end, -- simulate the EOC radio buttons. Assuming ELDA 2 means non-standard? Enrich has non-std for ELDA
+	Condition = case isnull(c.ELDA, 0) when 2 then 3 else isnull(c.ELDAStandard,0) end -- simulate non-standard radio button
 from participationCTE c
-where c.StudentLocalID = @s
 
---union all
+union all
+
+-- Grade 2 Gifted
+select c.IepRefID, c.IEPAccomSeq, 'GTTP', 'GTTP', -- we made up the EO test code. accoms are in a text box
+	GroupYNna = case isnull(c.GTTP, 0) when 1 then 1 when 2 then 1 else 0 end,
+	AltYNna = 0,
+	TestYN = c.GTTP, 
+	Condition = c.GTTPCond
+from participationCTE c
+
+union all
+
+------- algebra
+select c.IepRefID, c.IEPAccomSeq, 'EOC', 'AC8', c.EOCTest, AltYNna = 0, c.EOCAlgMath, c.EOCMathCond
+from participationCTE c
+
+union all
 
 ---- english
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
---	EOTestCode = 'AC10',
---	c.EOCTest, c.EOCEnglish, EOCEnglishCond, 
---	Participation = 
---		case EOCTest when 1 then
---			case isnull(c.EOCEnglish,0) when 1 then
---				case isnull(c.EOCEnglishCond,0) 
---					when 0 then 5 -- not in group
---					else c.EOCEnglishCond
---				end
---			else 5
---			end
---		else 5
---		end
+select c.IepRefID, c.IEPAccomSeq, 'EOC', 'AC10', c.EOCTest, AltYNna = 0, c.EOCEnglish, EOCEnglishCond
+from participationCTE c
+
+union all
+
+---- biology
+select c.IepRefID, c.IEPAccomSeq, 'EOC', 'AC9', c.EOCTest, AltYNna = 0, c.EOCBiology, EOCBiologyCond
+from participationCTE c
+
+union all
+
+---- history
+select c.IepRefID, c.IEPAccomSeq, 'EOC', 'AC13', c.EOCTest, AltYNna = 0, c.EOCUSHistory, EOCUSHistoryCond
+from participationCTE c
+) stp
+join LEGACYSPED.MAP_IepStudentRefID ms on stp.IEPRefID = ms.IEPRefID
+join LEGACYSPED.Student s on ms.StudentRefID = s.StudentRefID
+left join LEGACYSPED.LOGIC_EOTestParticipation logic on 
+	stp.TestGroup = logic.TestGroup and
+	stp.GroupYNna = logic.GroupYNna and 
+	stp.AltYNna = logic.AltYNna and 
+	stp.TestYN = logic.TestYN and 
+	stp.Conditions = logic.Conditions
+
+where s.StudentLocalID = @s
+
+
+
+
+select * from LEGACYSPED.LOGIC_EOTestParticipation where TestGroup = 'EOC' and GroupYNna = 1 and AltYNna = 0 and TestYN = 1
+
+
+
+
+
+--union all --- not in Enrich
+---- physical science
+--select c.IepRefID, c.IEPAccomSeq, 'EOC', EOTestCode = 'xxxxxxxxxxxxxxxxxxxxxx', c.EOCTest, c.EOCPhysicalSci, EOCPhysicalSciCond
 --from participationCTE c
---where c.StudentLocalID = @s
 
---union all
 
------- biology
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
---	EOTestCode = 'AC9',
---	c.EOCTest, c.EOCBiology, EOCBiologyCond, 
---	Participation = 
---		case EOCTest when 1 then
---			case isnull(c.EOCBiology,0) when 1 then
---				case isnull(c.EOCBiologyCond,0) 
---					when 0 then 5 -- not in group
---					else c.EOCBiologyCond
---				end
---			else 5
---			end
---		else 5
---		end
---from participationCTE c
---where c.StudentLocalID = @s
 
---union all
 
------- history
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
---	EOTestCode = 'AC13',
---	c.EOCTest, c.EOCUSHistory, EOCUSHistoryCond, 
---	Participation = 
---		case EOCTest when 1 then
---			case isnull(c.EOCUSHistory,0) when 1 then
---				case isnull(c.EOCUSHistoryCond,0) 
---					when 0 then 5 -- not in group
---					else c.EOCUSHistoryCond
---				end
---			else 5
---			end
---		else 5
---		end
---from participationCTE c
---where c.StudentLocalID = @s
 
-go
+--create view LEGACYSPED.StateDistrictParticipationDef
+--as
+--/* 
+--	There are 2 Participation Def records with the name "Alternate", one for District and one for State tests
+--	Where there is an Alternate participation in the legacy data, we need to associate it with the proper participation def in Enrich
+--	To do so, we will create a view that identifies which is which 
+--	Then we will use this view in Transform_IepTestParticipation to get the correct ParticipationDef ID
+--	If the same participation def ID is used for both State and District test, as in the case of "Regular" no harm done
+--*/
+--select 
+--	ParticipationTypeCode = case pd.text
+---- arbitrary values in a logical order, to avoid spelling issues in joins. Must be spelled in this view the same as in IepTestParticipationDef
+--		when 'Standard' then 1 
+--		when 'Std w/ Accom' then 2
+--		when 'Non-Standard' then 3
+--		when 'Alternate' then 4
+--		when 'Not in group' then 5
+--	end,
+--	td.IsState,
+--	ParticipationType = pd.Text, 
+--	DistrictParticipationDefID = max(convert(varchar(36), pdd.ID)),
+--	StateParticipationDefID = max(convert(varchar(36), pds.ID))
+--from IepAllowedTestParticipation atp 
+--join IepTestDef td on atp.TestDefID = td.ID -- seems odd to have test def in from clause but only isstate in select clause. This view is about participations...
+--join IepTestParticipationDef pd on atp.ParticipationDefID = pd.ID -- one row each
+--left join IepTestParticipationDef pdd on atp.ParticipationDefID = pdd.ID and td.IsState = 0
+--left join IepTestParticipationDef pds on atp.ParticipationDefID = pds.ID and td.IsState = 1
+--where pd.text in ('Not in group', 'Standard', 'Std w/ Accom', 'Alternate', 'Non-Standard')  -- these are the only ones coming from Excent Online
+--group by pd.Text, td.IsState
 
 
 ----------------------------------------------------------------------------------------------------
 
 
---union all --- not in Enrich
-
----- physical science
---select c.StudentRefID, c.StudentLocalID, c.Firstname, c.LastName, c.GradeLevel, c.IepRefID, c.IEPAccomSeq, 
---	EOTestCode = 'xxxxxxxxxxxxxxxxxxxxxx',
---	c.EOCTest, c.EOCPhysicalSci, EOCPhysicalSciCond, 
---	Participation = 
---		case EOCTest when 1 then
---			case isnull(c.EOCPhysicalSci,0) when 1 then
---				case isnull(c.EOCPhysicalSciCond,0) 
---					when 0 then 5 -- not in group
---					else c.EOCPhysicalSciCond
---				end
---			else 5
---			end
---		else 5
---		end
---from participationCTE c
---where c.StudentLocalID = @s
 
