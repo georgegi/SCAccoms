@@ -28,7 +28,7 @@ as (
 		CompletedDate = GETDATE(),
 		CompletedBy = 'EEE133BD-C557-47E1-AB67-EE413DD3D1AB' -- BuiltIn: Support
 	FROM -- select itm.IepRefID from
-		x_LEGACYACCOM.Transform_PrgIep itm JOIN 
+		Legacysped.Transform_PrgIep itm JOIN 
 		dbo.PrgSectionDef sd on itm.DefID = sd.ItemDefID and not (sd.FormTemplateID is null and sd.HeaderFormTemplateID is null) join 
 		x_LEGACYACCOM.ImportPrgSectionsFormTemplates sec on sd.ID = sec.SectionDefID LEFT JOIN
 		x_LEGACYACCOM.MAP_FormInstanceID mfi on itm.IEPRefID = mfi.ItemRefID and sd.id = mfi.SectionDefID 

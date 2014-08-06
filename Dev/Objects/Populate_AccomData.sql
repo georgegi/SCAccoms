@@ -10,7 +10,7 @@ To Populate the source data in Enrich database from the EO database
 */
 DECLARE @etlRoot varchar(255), @VpnConnectFile varchar(255), @VpnDisconnectFile varchar(255), @PopulateDCSpeedObj varchar(255), @q varchar(8000),@district varchar(50), @vpnYN char(1),@locfolder varchar(250) ; 
 
-DECLARE @ro varchar(100), @et varchar(100), @deleteq NVARCHAR(max), @insertqiep NVARCHAR(max),@insertqph NVARCHAR(max), @insertqco NVARCHAR(max), @LinkedserverAddress VARCHAR(100), @DatabaseOwner VARCHAR(100), @DatabaseName VARCHAR(100), @newline varchar(5) ; set @newline = '
+DECLARE @ro varchar(100), @et varchar(100), @deleteqa NVARCHAR(max),@deleteqasc NVARCHAR(max),@deleteqascm NVARCHAR(max), @insertqa NVARCHAR(max),@insertqasc NVARCHAR(max), @insertqascm NVARCHAR(max), @LinkedserverAddress VARCHAR(100), @DatabaseOwner VARCHAR(100), @DatabaseName VARCHAR(100), @newline varchar(5) ; set @newline = '
 '
 
 SELECT @LinkedserverAddress = LinkedServer, @DatabaseOwner = DatabaseOwner, @DatabaseName = DatabaseName -- SELECT *
@@ -48,27 +48,27 @@ EXEC master..xp_CMDShell @VpnConnectFile
 REVERT
 END
 
-SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModTbl_RAW'
-
-SET @insertqiep = 'INSERT x_LEGACYACCOM.EO_IEPAccomModTbl_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content)
-select a.*
+SET @deleteqa = 'DROP TABLE x_LEGACYACCOM.EO_IEPAccomModTbl_RAW'
+EXEC (@deleteqa)
+ 
+SET @insertqa = 'select a.* INTO x_LEGACYACCOM.EO_IEPAccomModTbl_RAW
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID  
 where isnull(a.del_flag,0)=0'
 
-SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW'
- 
-SET @insertqph = 'INSERT x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
-select a2.*
+SET @deleteqasc = 'DROP TABLE x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW'
+EXEC (@deleteqasc)
+
+SET @insertqph = 'select a2.* INTO x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
 where isnull(a.del_flag,0)=0 and isnull(a2.del_flag,0)=0'
  
-SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW'
+SET @deleteqascm = 'DROP TABLE x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW'
+EXEC (@deleteqascm)
 
-SET @insertqco = 'INSERT x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
-select aa.*
+SET @insertqascm = 'select aa.* INTO x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
@@ -76,11 +76,10 @@ join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbn
 where isnull(a.del_flag,0)=0 and isnull(a2.del_flag,0)=0 and isnull(aa.del_flag,0)=0'
  
  
- 
- EXEC (@deleteq)
- EXEC (@insertqiep)
- EXEC (@insertqph)
- EXEC (@insertqco)
+
+ EXEC (@insertqa)
+ EXEC (@deleteqasc)
+ EXEC (@insertqascm)
  
  
 END
