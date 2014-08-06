@@ -131,18 +131,19 @@ join Dev2005.QASCConvert2005.dbo.IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPA
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-select ParticipationTypeCode, ParticipationType from LEGACYSPED.StateDistrictParticipationDef p where ParticipationTypeCode <> 4 order by ParticipationTypeCode
+select * from LEGACYSPED.StateDistrictParticipationDef p order by ParticipationTypeCode
 
 select m.*, MinGrade = gmin.Name, MaxGrade = gmax.Name
 from LEGACYSPED.MAP_TestDefID m
 join IepTestDef td on m.TestDefID = td.ID
 left join GradeLevel gmin on td.MinGradeID = gmin.ID
 left join GradeLevel gmax on td.MaxGradeID = gmax.ID
-where EnrichTestName not like 'SC PASS%' 
-order by EnrichTestName
+--where EnrichTestName not like 'SC PASS%' 
+order by m.Sequence
 
 
-declare @s varchar(20) ; set @s = '159480484600'
+declare @s varchar(20) ; set @s = '189770934100'
+
 
 
 
@@ -169,12 +170,12 @@ select m.IEPRefID, a2.IEPAccomSeq,
 	--
 	a2.DistAssess, a2.DistAssessTitle, a2.AltAssess,
 	--
-	a2.EOCTest,
-		a2.EOCAlgMath, a2.EOCMathCond,
-		a2.EOCEnglish, a2.EOCEnglishCond,
-		a2.EOCPhysicalSci, a2.EOCPhysicalSciCond,
-		a2.EOCBiology, a2.EOCBiologyCond,
-		a2.EOCUSHistory, a2.EOCUSHistoryCond
+	EOCTest = isnull(a2.EOCTest,0),
+		a2.EOCAlgMath, EOCMathCond = isnull(a2.EOCMathCond,0),
+		a2.EOCEnglish, EOCEnglishCond = isnull(a2.EOCEnglishCond,0),
+		a2.EOCPhysicalSci, EOCPhysicalSciCond = isnull(a2.EOCPhysicalSciCond,0),
+		a2.EOCBiology, EOCBiologyCond = isnull(a2.EOCBiologyCond,0),
+		a2.EOCUSHistory, EOCUSHistoryCond = isnull(a2.EOCUSHistoryCond,0)
 from LEGACYSPED.MAP_IEPStudentRefID m 
 --join LEGACYSPED.EO_IEPAccomModTbl_RAW a on m.StudentRefID = a.GStudentID
 --join LEGACYSPED.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
@@ -191,12 +192,13 @@ select
 	s.StudentLocalID, s.Firstname, s.Lastname, s.GradeLevelCode,
 	stp.IepRefID, stp.IEPAccomSeq, 
 	stp.TestGroup, 
-	stp.EOTestCode, 
+	stp.EOTestCode, td.EnrichTestName, td.TestDefID,
 	GroupSelection = logic.GroupYNnaDesc, 
 	AltSelection = logic.AltYNnaDesc, 
 	TestYN = logic.TestYNDesc,
 	Conditions = logic.ConditionsDesc,
-	Logic.Participation
+	Logic.Participation, p.StateParticipationDefID
+	--, stp.GroupYNna, stp.AltYNna, stp.TestYN, stp.Conditions
 from (
 
 -- PASS
@@ -239,14 +241,14 @@ union all
 select c.IepRefID, c.IEPAccomSeq, 'ELDA', 'AC14', 
 	GroupYNna = isnull(c.ELDA, 0), -- simulate the EOC radio buttons
 	AltYNna = 0,
-	TestYN = case isnull(c.ELDA, 0) when 1 then 1 when 2 then 1 else 0 end, -- simulate the EOC radio buttons. Assuming ELDA 2 means non-standard? Enrich has non-std for ELDA
-	Condition = case isnull(c.ELDA, 0) when 2 then 3 else isnull(c.ELDAStandard,0) end -- simulate non-standard radio button
+	TestYN = case isnull(c.ELDA, 0) when 1 then 1 when 2 then 1 else 0 end, -- simulate the EOC checkbox. 1 is checked, 2 is checked, else not checked.
+	Condition = case isnull(c.ELDA, 0) when 2 then 3 else isnull(c.ELDAStandard,0) end -- simulate non-standard radio button. Assuming ELDA 2 means non-standard? Enrich has non-std for ELDA
 from participationCTE c
 
 union all
 
 -- Grade 2 Gifted
-select c.IepRefID, c.IEPAccomSeq, 'GTTP', 'GTTP', -- we made up the EO test code. accoms are in a text box
+select c.IepRefID, c.IEPAccomSeq, 'GTTP', 'GTTP', -- we made up the EO test code. accoms are in a text box.  We'll put 'See PDF' in the Enrich UI
 	GroupYNna = case isnull(c.GTTP, 0) when 1 then 1 when 2 then 1 else 0 end,
 	AltYNna = 0,
 	TestYN = c.GTTP, 
@@ -276,24 +278,28 @@ union all
 ---- history
 select c.IepRefID, c.IEPAccomSeq, 'EOC', 'AC13', c.EOCTest, AltYNna = 0, c.EOCUSHistory, EOCUSHistoryCond
 from participationCTE c
+
 ) stp
 join LEGACYSPED.MAP_IepStudentRefID ms on stp.IEPRefID = ms.IEPRefID
 join LEGACYSPED.Student s on ms.StudentRefID = s.StudentRefID
+left join LEGACYSPED.MAP_TestDefID td on stp.EOTestCode = td.EOTestCode
 left join LEGACYSPED.LOGIC_EOTestParticipation logic on 
 	stp.TestGroup = logic.TestGroup and
 	stp.GroupYNna = logic.GroupYNna and 
 	stp.AltYNna = logic.AltYNna and 
 	stp.TestYN = logic.TestYN and 
 	stp.Conditions = logic.Conditions
+left join LEGACYSPED.StateDistrictParticipationDef p on logic.Participation = p.ParticipationType
 
 where s.StudentLocalID = @s
 
+order by StudentLocalID, EOTestCode
 
 
 
-select * from LEGACYSPED.LOGIC_EOTestParticipation where TestGroup = 'EOC' and GroupYNna = 1 and AltYNna = 0 and TestYN = 1
+--select * from LEGACYSPED.LOGIC_EOTestParticipation where TestGroup in ('ELDA', 'GTTP') 
 
-
+-- select * from LEGACYSPED.LOGIC_EOTestParticipation logic
 
 
 
