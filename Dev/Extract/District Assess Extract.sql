@@ -1,9 +1,9 @@
 
-if object_id('LEGACYSPED.EO_DistrictTestAccomm_LOCAL') is not null
-drop table LEGACYSPED.EO_DistrictTestAccomm_LOCAL
+if object_id('x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL') is not null
+drop table x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL
 go
 
-create table LEGACYSPED.EO_DistrictTestAccomm_LOCAL (
+create table x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL (
 IEPRefID	int not null,
 SubRefID	int not null,
 DistAssesstitle varchar(100)  null,
@@ -12,11 +12,11 @@ Accommodations text NULL,
 Sequence int not null
 )
 
-alter table LEGACYSPED.EO_DistrictTestAccomm_LOCAL 
-	add constraint PK_LEGACYSPED_EO_DistrictTestAccomm_LOCAL primary key (SubRefID)
+alter table x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
+	add constraint PK_x_LEGACYACCOM_EO_DistrictTestAccomm_LOCAL primary key (SubRefID)
 go
 
-create index IX_LEGACYSPED_EO_DistrictTestAccomm_LOCAL_IEPComplSeqNum on LEGACYSPED.EO_DistrictTestAccomm_LOCAL (IEPRefID)
+create index IX_x_LEGACYACCOM_EO_DistrictTestAccomm_LOCAL_IEPComplSeqNum on x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL (IEPRefID)
 go
 
 
@@ -24,7 +24,7 @@ go
 --select ID, Label from dbo.FormTemplateInputSelectFieldOption where SelectFieldId = 'CA1A4A5F-FE71-4379-866A-522CFE2B2959' order by sequence
 
 ---- District assessments completed IEPs
-insert LEGACYSPED.EO_DistrictTestAccomm_LOCAL 
+insert x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
 select m.IEPRefID, SubRefID = a.IEPAccomSeq,
 	DistAssessTitle = case isnull(a2.DistAssess,0) when 2 then cast(a2.AltAssess as varchar(100)) when 1 then a2.DistAssessTitle end,
 	Participation = 
@@ -43,19 +43,19 @@ select m.IEPRefID, SubRefID = a.IEPAccomSeq,
 		end,
 	Sequence = 0 -- hard coding to cheat here - we only have 1 district assessment in EO
 from LEGACYSPED.MAP_IEPStudentRefID m
-join LEGACYSPED.EO_IEPAccomModTbl_RAW a on m.StudentRefID = a.GStudentID
-join LEGACYSPED.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq and isnull(a2.del_flag,0)=0 and isnull(a.del_flag,0)=0
+join x_LEGACYACCOM.EO_IEPAccomModTbl_RAW a on m.StudentRefID = a.GStudentID
+join x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq and isnull(a2.del_flag,0)=0 and isnull(a.del_flag,0)=0
 join (
 	select a1.IEPAccomSeq,
 		Accommodations = (
 			select li = t1.AccomDesc -- column name will be used as a tag 
-			from LEGACYSPED.EO_IEPAccomModListTbl_SC_RAW t1
+			from x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW t1
 			where a1.IEPAccomSeq = t1.IEPAccomSeq 
 			and t1.AccomType = 'AC12' 
 			and isnull(a1.del_flag,0)=0 and isnull(t1.del_flag,0)=0
 			for xml path('')
 			)
-	from LEGACYSPED.EO_IEPAccomModTbl_RAW a1 
+	from x_LEGACYACCOM.EO_IEPAccomModTbl_RAW a1 
 ) acc on a.IEPAccomSeq = acc.IEPAccomSeq
 go
 
@@ -70,24 +70,24 @@ go
 
 
 
--- exec x_DATATEAM.FormletPivotViewGenerator_TextOutput 'IEP', 'LEGACYSPED.EO_DistrictTestAccomm_LOCAL', 'LEGACYSPED.EO_DistrictTestAccomm_LOCAL', 'Assessments', 'ConvertedAssessments'
+-- exec x_DATATEAM.FormletPivotViewGenerator_TextOutput 'IEP', 'x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL', 'x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL', 'Assessments', 'ConvertedAssessments'
 	-- note: we cheated by putting the table name in the 1:M field in the procedure call. we know we'll get away with it because we know we only have 1 dist assess in EO
 
 
-if object_id('LEGACYSPED.ConvertedAssessmentsTextsPivot', 'V') is not null
-DROP VIEW LEGACYSPED.ConvertedAssessmentsTextsPivot
+if object_id('x_LEGACYACCOM.ConvertedAssessmentsTextsPivot', 'V') is not null
+DROP VIEW x_LEGACYACCOM.ConvertedAssessmentsTextsPivot
 GO
 
-create view LEGACYSPED.ConvertedAssessmentsTextsPivot
+create view x_LEGACYACCOM.ConvertedAssessmentsTextsPivot
 as
 select u.IEPRefID, u.SubRefID, u.Value, u.Sequence, u.InputFieldID, InputItemType =  iit.Name, InputItemTypeID = iit.ID 
 from (
 
 	select IepRefID, SubRefID =  x.SubRefID, Value = x.DistAssesstitle, InputFieldID = 'D2C7221B-985B-45BB-AFB5-FBE439CC3C38', Sequence =  x.Sequence  -- (1:M)  AssessName - Name
-	from LEGACYSPED.EO_DistrictTestAccomm_LOCAL x
+	from x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL x
 	UNION ALL
 	select IepRefID, SubRefID =  x.SubRefID, Value = x.Accommodations, InputFieldID = '6E19E598-E42B-45C7-99E2-7EE834B468D8', Sequence =  x.Sequence  -- (1:M)  AssessAccom - Accommodations
-	from LEGACYSPED.EO_DistrictTestAccomm_LOCAL x
+	from x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL x
 
 	) u join
 FormTemplateInputItem ftii on u.InputFieldID = ftii.Id join 
@@ -95,17 +95,17 @@ FormTemplateInputItemType iit on ftii.TypeId = iit.Id
 go
 
 
-if object_id('LEGACYSPED.ConvertedAssessmentsSingleSelectPivot', 'V') is not null
-DROP VIEW LEGACYSPED.ConvertedAssessmentsSingleSelectPivot
+if object_id('x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot', 'V') is not null
+DROP VIEW x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot
 GO
 
-create view LEGACYSPED.ConvertedAssessmentsSingleSelectPivot
+create view x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot
 as
 select u.IEPRefID, u.SubRefID, u.Value, u.Sequence, u.InputFieldID, InputItemType =  iit.Name, InputItemTypeID = iit.ID 
 from (
 
 	select IepRefID, SubRefID =  x.SubRefID, Value = x.Participation, InputFieldID = 'CA1A4A5F-FE71-4379-866A-522CFE2B2959', Sequence =  x.Sequence  -- (1:M)  thirdS3 - Participation
-	from LEGACYSPED.EO_DistrictTestAccomm_LOCAL x
+	from x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL x
 
 	) u join
 FormTemplateInputItem ftii on u.InputFieldID = ftii.Id join 
