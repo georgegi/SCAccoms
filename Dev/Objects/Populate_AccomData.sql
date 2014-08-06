@@ -48,24 +48,26 @@ EXEC master..xp_CMDShell @VpnConnectFile
 REVERT
 END
 
-SET @deleteq = 'DELETE x_LEGACYACCOM.AllDocs_LOCAL'
+SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModTbl_RAW'
 
-SET @insertqiep = 'INSERT x_LEGACYACCOM.AllDocs_LOCAL (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content)
+SET @insertqiep = 'INSERT x_LEGACYACCOM.EO_IEPAccomModTbl_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content)
 select a.*
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID  
-join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
 where isnull(a.del_flag,0)=0'
+
+SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW'
  
-SET @insertqph = 'INSERT x_LEGACYACCOM.AllDocs_LOCAL (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
+SET @insertqph = 'INSERT x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
 select a2.*
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl_SC a2 on a.IEPAccomSeq = a2.IEPAccomSeq 
 where isnull(a.del_flag,0)=0 and isnull(a2.del_flag,0)=0'
  
+SET @deleteq = 'DELETE x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW'
 
-SET @insertqco = 'INSERT x_LEGACYACCOM.AllDocs_LOCAL (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
+SET @insertqco = 'INSERT x_LEGACYACCOM.EO_IEPAccomModListTbl_SC_RAW (DocumentRefID,DocumentType,DocumentDate,StudentRefID,StudentLocalID,MimeType,Content) 
 select aa.*
 from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModTbl a on x.GStudentID = a.GStudentID
