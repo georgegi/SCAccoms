@@ -156,9 +156,9 @@ cross join LEGACYSPED.ConditionsSelection cnd
 -- there is a cleaner way to assure logical combinations, but for sake of time we'll just exclude some invalid or unimportant ones
 where 1=1
 and not (alt.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
-and not (t.TestGroup = 'ELDA' and cnd.num = 3) -- There is no "non-standard" condition for ELDA
---and not (t.TestGroup in ('ELDA', 'GTTP') and tg.num <> 1) -- This is not a test group, we just pretend it is
---and not (t.TestGroup in ('ELDA', 'GTTP') and alt.num <> 0) -- This is not a test group, we just pretend it is
+--and not (t.TestGroup = 'ELDA' and cnd.num = 3) -- There is no "non-standard" condition for ELDA
+--and not (t.TestGroup in ('ELDA', 'GTTP') and tg.num <> 1) -- This is not a test group, we just treat it as one
+--and not (t.TestGroup in ('ELDA', 'GTTP', 'EOC') and alt.num <> 0) -- This is not a test group, we just pretend it is
 and not (alt.Num = 1 and t.EOTestCode = 'AC7') -- there is no Writing for the SC Alt
 ) t
 left join LEGACYSPED.StateDistrictParticipationDef p on t.Participation = p.ParticipationTypeCode
