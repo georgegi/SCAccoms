@@ -1,8 +1,8 @@
-IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Populate_EO_DistrictTestAccomm')
-DROP PROC x_LEGACYACCOM.Populate_EO_DistrictTestAccomm
+IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Populate_DistrictTestAccomm_LOCAL')
+DROP PROC x_LEGACYACCOM.Populate_DistrictTestAccomm_LOCAL
 GO
 
-CREATE PROC x_LEGACYACCOM.Populate_EO_DistrictTestAccomm
+CREATE PROC x_LEGACYACCOM.Populate_DistrictTestAccomm_LOCAL
 AS
 BEGIN
 

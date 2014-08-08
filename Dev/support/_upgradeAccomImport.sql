@@ -24,7 +24,7 @@ GO
 GO
 :r ..\Dev\Objects\Populate_AccomData.sql
 GO
-:r ..\Dev\Objects\Populate_EO_DistrictTestAccomm.sql
+:r ..\Dev\Objects\Populate_DistrictTestAccomm_LOCAL.sql
 GO
 :r ..\Dev\Objects\PopulateAccomdationdata.sql
 GO
