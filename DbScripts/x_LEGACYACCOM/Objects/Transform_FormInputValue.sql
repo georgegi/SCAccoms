@@ -1,3 +1,27 @@
+
+
+if object_id('x_LEGACYACCOM.MAP_FormInputValueID') is not null
+drop table x_LEGACYACCOM.MAP_FormInputValueID
+go
+
+CREATE TABLE x_LEGACYACCOM.MAP_FormInputValueID (
+	Item varchar(10) NOT NULL,
+	IntervalID uniqueidentifier NOT NULL,
+	InputFieldID uniqueidentifier NOT NULL,
+	DestID uniqueidentifier NOT NULL,
+	Sequence int NOT NULL,
+ CONSTRAINT PK_MAP_FormInputValueID PRIMARY KEY CLUSTERED 
+(
+	IntervalID ASC,
+	InputFieldID ASC,
+	Sequence ASC
+)
+)
+
+go
+
+
+
 -- we create the objects in the required order 
 CREATE VIEW x_LEGACYACCOM.Transform_PrgSectionFormInstance
 AS
@@ -116,11 +140,11 @@ from x_LEGACYACCOM.Transform_PrgSectionFormInstance f join
 go
 
 
-if object_id('x_LEGACYACCOM.Populate_DistrictTestAccomm_LOCAL', 'V') is not null
-DROP VIEW x_LEGACYACCOM.Populate_DistrictTestAccomm_LOCAL
+if object_id('x_LEGACYACCOM.Transform_FormInputValue', 'V') is not null
+DROP VIEW x_LEGACYACCOM.Transform_FormInputValue
 GO
 
-create view x_LEGACYACCOM.Populate_DistrictTestAccomm_LOCAL
+create view x_LEGACYACCOM.Transform_FormInputValue
 as
 --select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar, v.Value, 101)
 --from x_LEGACYACCOM.Transform_FormInputDateValue v
@@ -134,3 +158,4 @@ union all
 select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar(max), v.Value)
 from x_LEGACYACCOM.Transform_FormInputSingleSelectValue v
 go
+
