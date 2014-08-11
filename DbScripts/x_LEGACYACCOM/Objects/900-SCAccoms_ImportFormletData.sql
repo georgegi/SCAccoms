@@ -1,8 +1,8 @@
-IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Populate_AccomdationData')
-DROP PROC x_LEGACYACCOM.Populate_AccomdationData
+IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'SCAccoms_ImportFormletData')
+DROP PROC x_LEGACYACCOM.SCAccoms_ImportFormletData
 GO
 
-CREATE PROC x_LEGACYACCOM.Populate_AccomdationData
+CREATE PROC x_LEGACYACCOM.SCAccoms_ImportFormletData
 AS
 BEGIN 
 -- rollback 
