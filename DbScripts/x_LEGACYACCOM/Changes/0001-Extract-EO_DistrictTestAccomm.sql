@@ -42,12 +42,12 @@ FormTemplateInputItem ftii on u.InputFieldID = ftii.Id join
 FormTemplateInputItemType iit on ftii.TypeId = iit.Id
 go
 
--- Single Select
-if object_id('x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot', 'V') is not null
-DROP VIEW x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot
+-- Single Selects
+if object_id('x_LEGACYACCOM.ConvertedAssessmentsSingleSelectsPivot', 'V') is not null
+DROP VIEW x_LEGACYACCOM.ConvertedAssessmentsSingleSelectsPivot
 GO
 
-create view x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot
+create view x_LEGACYACCOM.ConvertedAssessmentsSingleSelectsPivot
 as
 select u.IEPRefID, u.SubRefID, u.Value, u.Sequence, u.InputFieldID, InputItemType =  iit.Name, InputItemTypeID = iit.ID 
 from (
