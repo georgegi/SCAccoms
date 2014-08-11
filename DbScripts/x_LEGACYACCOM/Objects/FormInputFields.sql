@@ -47,4 +47,4 @@ left join FormTemplateControlProperty cpt on c.ControlId = cpt.ControlId and cpt
 left join FormTemplateControlProperty cpn on c.ControlId = cpn.ControlId and cpn.Name = 'LayoutName'
 left join FormTemplateInputItem ii on c.ControlId = ii.InputAreaId
 left join FormTemplateInputItemType iit on ii.TypeId = iit.Id
-
+go
