@@ -82,7 +82,6 @@ from x_LEGACYACCOM.Transform_FormInputTextValue t
 left join FormInputTextValue x on t.DestID = x.id
 where x.id is null
 
-/*
 -- ##########################################################################################################################################################
 insert FormInputFlagValue 
 select t.DestID, t.Value
@@ -96,7 +95,6 @@ select t.DestID, t.Value
 from x_LEGACYACCOM.Transform_FormInputDateValue t
 left join FormInputDateValue x on t.DestID = x.id
 where x.id is null
-*/
 
 -- ##########################################################################################################################################################
 insert FormInputSingleSelectValue 
@@ -178,6 +176,21 @@ from LEGACYSPED.Transform_PrgSection t
 left join PrgSection x on t.DestID = x.id
 where t.VersionID is null 
 and x.ID is null
+
+
+
+insert IepAssessments
+select s.DestID, ParentsAreInformedID = NULL, UseBooleanParticipation = 0
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned s
+where s.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
+
+
+insert IepAccommodations
+select s.DestID, Explanation = NULL, TrackDetails = 0, TrackForAssessments = 0, NoAccommodationsRequired = 0, NoModificationsRequired = 0-- defaulting for the time beging
+from LEGACYSPED.MAP_PrgSectionID s
+where s.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+
+
 
 ---- ##########################################################################################################################################################
 
