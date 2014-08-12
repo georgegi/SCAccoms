@@ -1,8 +1,8 @@
-IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Populate_AccomData_RAW')
-DROP PROC x_LEGACYACCOM.Populate_AccomData_RAW
+IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'ImportLegacyData_RAWandLOCAL')
+DROP PROC x_LEGACYACCOM.ImportLegacyData_RAWandLOCAL
 GO
 
-CREATE PROC x_LEGACYACCOM.Populate_AccomData_RAW
+CREATE PROC x_LEGACYACCOM.ImportLegacyData_RAWandLOCAL
 AS
 BEGIN
 /*

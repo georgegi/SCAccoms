@@ -1,0 +1,1 @@
+SQLCMD -S. -E -dEnrich_DCB8_SC_Demo -iF:\Git_new\SCAccoms\support\_upgradeAccomImport.sql -oF:\Git_new\SCAccoms\support\log_UpgradeEnrichAccomObjects.txt
