@@ -10,5 +10,5 @@ GO
 GO
 :r ..\DbScripts\x_LEGACYACCOM\Objects\007-ImportLegacyData_RAWandLOCAL.sql
 GO
-:r ..\DbScripts\x_LEGACYACCOM\Objects\900-ImportFormletData.sql
+:r ..\DbScripts\x_LEGACYACCOM\Objects\900-Insert_TestAccommodation.sql
 GO
