@@ -1,8 +1,8 @@
-IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Populate_AccomdationData')
-DROP PROC x_LEGACYACCOM.Populate_AccomdationData
+IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Insert_TestAccommodation')
+DROP PROC x_LEGACYACCOM.Insert_TestAccommodation
 GO
 
-CREATE PROC x_LEGACYACCOM.Populate_AccomdationData
+CREATE PROC x_LEGACYACCOM.Insert_TestAccommodation
 AS
 BEGIN 
 -- rollback 
