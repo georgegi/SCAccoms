@@ -82,6 +82,7 @@ from x_LEGACYACCOM.Transform_FormInputTextValue t
 left join FormInputTextValue x on t.DestID = x.id
 where x.id is null
 
+/*
 -- ##########################################################################################################################################################
 insert FormInputFlagValue 
 select t.DestID, t.Value
@@ -95,6 +96,7 @@ select t.DestID, t.Value
 from x_LEGACYACCOM.Transform_FormInputDateValue t
 left join FormInputDateValue x on t.DestID = x.id
 where x.id is null
+*/
 
 -- ##########################################################################################################################################################
 insert FormInputSingleSelectValue 
