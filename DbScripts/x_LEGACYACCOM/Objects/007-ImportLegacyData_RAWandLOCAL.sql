@@ -90,7 +90,7 @@ where isnull(a.del_flag,0)=0 and isnull(a2.del_flag,0)=0 and isnull(aa.del_flag,
  
 
 ------------------------------------------------------------ populate local table for district test accoms import
-
+DELETE x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
 
 insert x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
 select m.IEPRefID, SubRefID = a.IEPAccomSeq,
