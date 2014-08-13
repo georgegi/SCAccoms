@@ -391,19 +391,3 @@ left join LEGACYSPED.MAP_PrgVersionID v on ms.IEPRefID = v.IEPRefID
 left join LEGACYSPED.MAP_PrgSectionID av on v.DestID = av.VersionID and av.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64' 
 go
 
-
---where s.StudentLocalID = @s
-
---order by StudentLocalID, EOTestCode
-
--- select * from LEGACYSPED.MAP_PrgSectionID_NonVersioned where DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
-
--- select * from LEGACYSPED.MAP_PrgSectionID where DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
---select * from LEGACYSPED.MAP_PrgVersionID
---select * from LEGACYSPED.MAP_IEPStudentRefID
-
-
--- select * from LEGACYSPED.MAP_IepStudentRefID
-
-
--- select * from x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL
