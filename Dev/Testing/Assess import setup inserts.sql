@@ -25,14 +25,14 @@ where x.id is null
 
 
 
--- why do only 6 show in the UI? There are 11 in the db
-select ID, InstanceID, TestDefID, ParticipationDefID, IsParticipating from IepTestParticipation p --where exists (select 1 from IepAllowedTestParticipation a where a.TestDefID = p.TestDefID)
---and p.InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C'
+---- why do only 6 show in the UI? There are 11 in the db
+--select ID, InstanceID, TestDefID, ParticipationDefID, IsParticipating from IepTestParticipation p --where exists (select 1 from IepAllowedTestParticipation a where a.TestDefID = p.TestDefID)
+----and p.InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C'
 
 
-select * from x_LEGACYACCOM.MAP_TestDefID
+--select * from x_LEGACYACCOM.MAP_TestDefID
 
-select * from IepTestParticipation
+--select * from IepTestParticipation
 
 
 insert IepTestParticipation
@@ -44,23 +44,23 @@ where x.ID is null
 -- this did the trick.  cannot see the tests in UI until this is inserted (all tests for all students).
 -- note: it seems not to show up if the test def is not approrpriate for the grade level
 
-select * from x_LEGACYACCOM.MAP_TestDefID 
+--select * from x_LEGACYACCOM.MAP_TestDefID 
 
 
-select ID = newiD(), InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C', m.TestDefID, ParticipationDefID = NULL, IsParticipating = 0
-from x_LEGACYACCOM.MAP_TestDefID m
-left join IepTestParticipation x on m.TestDefID = x.TestDefID and x.InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C'
-where x.ID is null
+--select ID = newiD(), InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C', m.TestDefID, ParticipationDefID = NULL, IsParticipating = 0
+--from x_LEGACYACCOM.MAP_TestDefID m
+--left join IepTestParticipation x on m.TestDefID = x.TestDefID and x.InstanceID = '34131D7F-0505-40D3-B78A-814CA8DC1E6C'
+--where x.ID is null
 
-x_datateam.findguid 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
+--x_datateam.findguid 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
 
 
 --select * from Student where ID = '5553B53F-9FD8-4947-92F2-E83B1799E8B1'
 --select * from PrgItem where ID = '74E32240-FD3E-4DFC-A08C-7D10CD8943C6'
-select * from dbo.PrgSection where ID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
-select * from dbo.IepAssessments where ID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
-	--select * from dbo.IepJustification where InstanceID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1' -- ID = newid(), InstanceID, DefID = '1CBE17DF-CEFA-446B-A203-8B0955ADECE0', IsEnabled = 0
-select * from dbo.IepTestParticipation where InstanceID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
+--select * from dbo.PrgSection where ID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
+--select * from dbo.IepAssessments where ID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
+--	--select * from dbo.IepJustification where InstanceID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1' -- ID = newid(), InstanceID, DefID = '1CBE17DF-CEFA-446B-A203-8B0955ADECE0', IsEnabled = 0
+--select * from dbo.IepTestParticipation where InstanceID = 'FDADC456-9911-47DA-89F5-6DD8F1C717E1'
 
 -- x_datateam.findguid '1CBE17DF-CEFA-446B-A203-8B0955ADECE0'
 
@@ -69,11 +69,11 @@ select * from dbo.IepTestParticipation where InstanceID = 'FDADC456-9911-47DA-89
 
 
 
-select * from IepTestParticipation 
+--select * from IepTestParticipation 
 
 
-select * 
-from IepAssessments
+--select * 
+--from IepAssessments
 
 
 
