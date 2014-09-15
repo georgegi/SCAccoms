@@ -161,7 +161,7 @@ insert IepAccommodations (ID, Explanation, TrackDetails, TrackForAssessments, No
 select DestID, Explanation = NULL, TrackDetails = 0, TrackForAssessments = 0, NoAccommodationsRequired = 0, NoModificationsRequired = 0
 from LEGACYSPED.Transform_PrgSection t
 left join IepAccommodations x on t.DestID = x.ID 
-where t.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+where t.DefID = '43CD5045-8083-4534-AD66-A81C43A42F26'
 and x.ID is null
 
 

@@ -1,3 +1,5 @@
+:r ..\DbScripts\x_LEGACYACCOM\Changes\00000-AccommMod_ConfigImport.sql
+Go
 :r ..\DbScripts\x_LEGACYACCOM\Changes\0000-RegisterModule.sql
 Go
 :r ..\DbScripts\x_LEGACYACCOM\Changes\0001-Extract-EO_DistrictTestAccomm.sql

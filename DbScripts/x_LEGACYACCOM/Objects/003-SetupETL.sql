@@ -18,6 +18,7 @@ DECLARE @VC3ETL_LoadTable TABLE (ID uniqueidentifier, ExtractDatabase uniqueiden
 -- Insert the data to be synchronized into the temporary table
 INSERT INTO @VC3ETL_LoadTable VALUES ('5C8F8B6B-973B-4C8B-ACD1-1853C441E277', 'ECC83BE4-9CB9-4AC4-B7C3-2E4ACBECC26B', 0, 'x_LEGACYACCOM.ImportLegacyData_RAWandLOCAL', NULL, 0, NULL, NULL, NULL, 4, 0, 0, 0, 1, NULL, NULL, NULL, 0, 0, '12/17/2012 10:13:21 AM', NULL, NULL)
 INSERT INTO @VC3ETL_LoadTable VALUES ('75353434-5301-409C-8F61-993DAF274135', 'ECC83BE4-9CB9-4AC4-B7C3-2E4ACBECC26B', 1,  'x_LEGACYACCOM.SCAccoms_ImportFormletData', NULL, 0, NULL, NULL, NULL, 4, 0, 0, 0, 1, NULL, NULL, NULL, 0, 0, '12/17/2012 10:13:21 AM', NULL, NULL)
+-- INSERT INTO @VC3ETL_LoadTable VALUES ('85834387-84C1-4570-A48C-5F17DE3A3F10', 'ECC83BE4-9CB9-4AC4-B7C3-2E4ACBECC26B', 2,  'x_LEGACYACCOM.SCAccoms_ImportFormletData', NULL, 0, NULL, NULL, NULL, 4, 0, 0, 0, 1, NULL, NULL, NULL, 0, 0, '12/17/2012 10:13:21 AM', NULL, NULL)
 
 -- Declare a temporary table to hold the data to be synchronized    
 DECLARE @VC3ETL_LoadColumn TABLE (ID uniqueidentifier, LoadTable uniqueidentifier, SourceColumn varchar(500), DestColumn varchar(500), ColumnType char(1), UpdateOnDelete bit, DeletedValue varchar(500), NullValue varchar(500), Comments varchar(1000))

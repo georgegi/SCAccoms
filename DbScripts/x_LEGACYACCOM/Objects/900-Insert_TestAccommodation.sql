@@ -81,7 +81,7 @@ select t.DestID, t.Value
 from x_LEGACYACCOM.Transform_FormInputTextValue t
 left join FormInputTextValue x on t.DestID = x.id
 where x.id is null
-/*
+
 -- ##########################################################################################################################################################
 insert FormInputFlagValue 
 select t.DestID, t.Value
@@ -90,19 +90,18 @@ left join FormInputFlagValue x on t.DestID = x.id
 where x.id is null
 
 -- ##########################################################################################################################################################
-insert FormInputDateValue 
-select t.DestID, t.Value
-from x_LEGACYACCOM.Transform_FormInputDateValue t
-left join FormInputDateValue x on t.DestID = x.id
-where x.id is null
-*/
+--insert FormInputDateValue 
+--select t.DestID, t.Value
+--from x_LEGACYACCOM.Transform_FormInputDateValue t
+--left join FormInputDateValue x on t.DestID = x.id
+--where x.id is null
+
 -- ##########################################################################################################################################################
 insert FormInputSingleSelectValue 
 select t.DestID, t.Value -- not the name of the dest column - change later?
 from x_LEGACYACCOM.Transform_FormInputSingleSelectValue t
 left join FormInputSingleSelectValue x on t.DestID = x.id
 where x.id is null
-
 
 
 ---- ##########################################################################################################################################################
@@ -124,8 +123,6 @@ join PrgSectiondef secd on t.defid = secd.ID and secd.IsVersioned = 0
 left join LEGACYSPED.MAP_PrgSectionID_NonVersioned x on  t.destid = x.destid and t.ItemID = x.ItemID 
 where t.ItemID is not null ---- non versioned uses a different map
 and x.destid is null 
-
-
 
 ---- ##########################################################################################################################################################
 -- footer
@@ -149,17 +146,6 @@ and x.ID is null
 
 
 
-update s set FormInstanceID = mfi.FormInstanceID, HeaderFormInstanceID = mfi.HeaderFormInstanceID
--- select CurrentFormInstanceID = s.FormInstanceID, mfi.FormInstanceID, CurrentHeaderFormInstanceID = s.HeaderFormInstanceID, mfi.HeaderFormInstanceID
-from LEGACYSPED.MAP_IEPStudentRefID m
-left join dbo.PrgItem i on m.DestID = i.ID
-left join dbo.PrgVersion v on i.ID = v.ItemID 
-left join dbo.PrgSection s on i.ID = s.ItemID 
-left join dbo.PrgSectionDef sd on s.DefID = sd.ID
-join x_LEGACYACCOM.MAP_FormInstanceID mfi on m.IepRefID = mfi.ItemRefID and s.DefID = mfi.SectionDefID
-where isnull(mfi.FormInstanceID, mfi.HeaderFormInstanceID) is not null
-and isnull(s.FormInstanceID, s.HeaderFormInstanceID) is null
-
 
 -- ##########################################################################################################################################################
 -- versioned
@@ -180,17 +166,30 @@ where t.VersionID is null
 and x.ID is null
 
 
+-- Muthu: I thought this was already moved below the inserts.???? I moved it on 9/14/2014 at 10:30 pm eastern time.  GG
+update s set FormInstanceID = mfi.FormInstanceID, HeaderFormInstanceID = mfi.HeaderFormInstanceID
+-- select CurrentFormInstanceID = s.FormInstanceID, mfi.FormInstanceID, CurrentHeaderFormInstanceID = s.HeaderFormInstanceID, mfi.HeaderFormInstanceID
+from LEGACYSPED.MAP_IEPStudentRefID m
+left join dbo.PrgItem i on m.DestID = i.ID
+left join dbo.PrgVersion v on i.ID = v.ItemID 
+left join dbo.PrgSection s on i.ID = s.ItemID 
+left join dbo.PrgSectionDef sd on s.DefID = sd.ID
+join x_LEGACYACCOM.MAP_FormInstanceID mfi on m.IepRefID = mfi.ItemRefID and s.DefID = mfi.SectionDefID
+where isnull(mfi.FormInstanceID, mfi.HeaderFormInstanceID) is not null
+and isnull(s.FormInstanceID, s.HeaderFormInstanceID) is null
 
-insert IepAssessments
-select s.DestID, ParentsAreInformedID = NULL, UseBooleanParticipation = 0
-from LEGACYSPED.MAP_PrgSectionID_NonVersioned s
+
+
+insert IepAccommodations (ID, Explanation, TrackDetails, TrackForAssessments, NoAccommodationsRequired, NoModificationsRequired)
+select t.DestID, t.Explanation, t.TrackDetails, t.TrackForAssessments, t.NoAccommodationsRequired, t.NoModificationsRequired
+from x_LEGACYACCOM.Transform_IepAccommodations t
+left join IepAccommodations a on t.DestID = a.ID
+where a.id is null
+
+insert IepAssessments  -- Need to check this!!
+select s.DestID,NULL, 0
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned s 
 where s.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
-
-
-insert IepAccommodations
-select s.DestID, Explanation = NULL, TrackDetails = 0, TrackForAssessments = 0, NoAccommodationsRequired = 0, NoModificationsRequired = 0-- defaulting for the time beging
-from LEGACYSPED.MAP_PrgSectionID s
-where s.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
 
 
 

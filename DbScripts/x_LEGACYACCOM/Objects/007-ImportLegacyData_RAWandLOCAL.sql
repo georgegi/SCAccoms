@@ -14,6 +14,7 @@ DECLARE @ro varchar(100), @et varchar(100), @deleteqa NVARCHAR(max),@deleteqasc 
 	@insertqa NVARCHAR(max),
 	@insertqasc NVARCHAR(max), 
 	@insertqascm NVARCHAR(max), 
+	@insertqam NVARCHAR(max),
 	@LinkedserverAddress VARCHAR(100), @DatabaseOwner VARCHAR(100), @DatabaseName VARCHAR(100), @newline varchar(5) ; set @newline = '
 '
 
@@ -82,12 +83,15 @@ join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbn
 join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.[dbo].IEPAccomModListTbl_SC aa on a.IEPAccomSeq = aa.IEPAccomSeq 
 where isnull(a.del_flag,0)=0 and isnull(a2.del_flag,0)=0 and isnull(aa.del_flag,0)=0'
  
- 
 
+set @insertqam = 'select IEPComplSeqNum = x.IEPSeqNum, m.IEPModSeq, m.SupplementAids, ProgramModify = isnull(m.ProgramModify,0), m.Modifications into x_LEGACYACCOM.EO_ICIEPModTbl_SC_RAW 
+from '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.SpecialEdStudentsAndIEPs x
+left join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName,'dbnamehere')+'.dbo.ICIEPModTbl_SC m on x.IEPSeqNum = m.IEPComplSeqNum and isnull(m.del_flag,0)=0'
+ 
  EXEC (@insertqa)
  EXEC (@insertqasc)
  EXEC (@insertqascm)
- 
+ EXEC (@insertqam)
 
 ------------------------------------------------------------ populate local table for district test accoms import
 DELETE x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
@@ -125,6 +129,13 @@ join (
 			)
 	from x_LEGACYACCOM.EO_IEPAccomModTbl_RAW a1 
 ) acc on a.IEPAccomSeq = acc.IEPAccomSeq
+
+
+insert  x_LEGACYACCOM.ClassroomAccomMod_LOCAL
+-- using this for performance when we union all of the forminputfields together
+select IEPRefID = IEPComplSeqNum, SubRefID = IEPModSeq, ModifyYN = ProgramModify, Accoms = SupplementAids, Mods = Modifications
+from x_LEGACYACCOM.EO_ICIEPModTbl_SC_RAW r
+-- where IEPModSeq is not null -- we should not use a left join for this view. handle missing later.
 
  
 END
