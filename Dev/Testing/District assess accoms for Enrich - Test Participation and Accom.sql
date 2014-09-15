@@ -157,12 +157,13 @@ where t.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64' -- A0C84AE0-4F46-4DA5-9F9
 and x.ID is null
 
 
-insert IepAccommodations (ID, Explanation, TrackDetails, TrackForAssessments, NoAccommodationsRequired, NoModificationsRequired)
-select DestID, Explanation = NULL, TrackDetails = 0, TrackForAssessments = 0, NoAccommodationsRequired = 0, NoModificationsRequired = 0
-from LEGACYSPED.Transform_PrgSection t
-left join IepAccommodations x on t.DestID = x.ID 
-where t.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
-and x.ID is null
+-- this is the wrong DefID
+--insert IepAccommodations (ID, Explanation, TrackDetails, TrackForAssessments, NoAccommodationsRequired, NoModificationsRequired)
+--select DestID, Explanation = NULL, TrackDetails = 0, TrackForAssessments = 0, NoAccommodationsRequired = 0, NoModificationsRequired = 0
+--from LEGACYSPED.Transform_PrgSection t
+--left join IepAccommodations x on t.DestID = x.ID 
+--where t.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+--and x.ID is null
 
 
 

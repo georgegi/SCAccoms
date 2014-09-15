@@ -1,40 +1,42 @@
 
-(1 rows affected)
-
-(1 rows affected)
-
-(1 rows affected)
-
-(1 rows affected)
-
 (0 rows affected)
 
 (0 rows affected)
 
 (0 rows affected)
 
-(0 rows affected)
-
-(0 rows affected)
-
-(0 rows affected)
+(6 rows affected)
 
 (0 rows affected)
 
 (1 rows affected)
 
+(1 rows affected)
+
+(1 rows affected)
+
 (0 rows affected)
 
-(3 rows affected)
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
 
 (0 rows affected)
 
 (1 rows affected)
 
 (0 rows affected)
-Msg 2714, Level 16, State 3, Server RENEGADE, Procedure Transform_PrgSectionFormInstance, Line 7
-There is already an object named 'Transform_PrgSectionFormInstance' in the database.
-Msg 208, Level 16, State 1, Server RENEGADE, Procedure Transform_FormInputSingleSelectValue, Line 25
-Invalid object name 'x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot'.
-Msg 208, Level 16, State 1, Server RENEGADE, Procedure Transform_FormInputValue, Line 14
-Invalid object name 'x_LEGACYACCOM.Transform_FormInputSingleSelectValue'.
+
+(2 rows affected)
+
+(0 rows affected)
+
+(1 rows affected)
+
+(2 rows affected)
