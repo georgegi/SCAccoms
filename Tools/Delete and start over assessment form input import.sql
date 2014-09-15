@@ -71,12 +71,10 @@ update sec set HeaderFormInstanceID = NULL
 from x_LEGACYACCOM.MAP_FormInstanceID m
 join PrgSection sec on m.HeaderFormInstanceID = Sec.HeaderFormInstanceID
 
-
 delete fi
 -- select *
 from x_LEGACYACCOM.MAP_FormInstanceID m
 join FormInstance fi on m.HeaderFormInstanceID = fi.ID
-
 
 delete m
 -- select * 
@@ -85,6 +83,49 @@ from x_LEGACYACCOM.MAP_FormInputValueID m -- where IntervalID = '3AA56188-00C0-4
 delete m
 -- select * 
 from x_LEGACYACCOM.MAP_FormInstanceID m -- where HeaderFormInstanceIntervalID = '3AA56188-00C0-4E30-B074-EDCF6651B20B'
+
+-- assessments
+delete a
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned m
+join PrgSection s on m.DestID = s.ID
+join IepAssessments a on s.ID = a.ID
+
+delete s
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned m
+join PrgSection s on m.DestID = s.ID
+where s.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
+
+delete m
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned m
+where m.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
+
+--- accommodations
+delete a
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID m
+join PrgSection s on m.DestID = s.ID
+join IepAccommodations a on s.ID = a.ID
+
+delete s
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID m
+join PrgSection s on m.DestID = s.ID
+where s.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+
+delete m
+-- select * 
+from LEGACYSPED.MAP_PrgSectionID m
+where m.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+
+delete m
+-- select m.*
+from LEGACYSPED.ImportPrgSections m 
+where m.SectionDefID in ('4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C', 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64')
+
+
 
 
 commit

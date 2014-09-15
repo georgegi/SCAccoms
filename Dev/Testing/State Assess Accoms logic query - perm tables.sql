@@ -1,78 +1,78 @@
 set nocount on
 -- declare @tests table (TestGroup varchar(5), Test varchar(5)) ; insert @tests
 --select case when EnrichTestName like 'SC PASS %' then 'PASS' when EnrichTestName like 'EOC %' then 'EOC' when EnrichTestName = 'ELDA' then 'ELDA' when EOTestCode = 'GTTP' then 'GTTP' end, m.EOTestCode
---from LEGACYSPED.MAP_TestDefID m
+--from x_LEGACYACCOM.MAP_TestDefID m
 --where 1=1
 ----and EnrichTestName like 'SC PASS %' 
 ---- and EOTestCode = 'AC3'
 --order by 1, 2
 
-if object_id('LEGACYSPED.TestGroupSelection') is not null
-drop table LEGACYSPED.TestGroupSelection
+if object_id('x_LEGACYACCOM.TestGroupSelection') is not null
+drop table x_LEGACYACCOM.TestGroupSelection
 go
 
-create table LEGACYSPED.TestGroupSelection (
+create table x_LEGACYACCOM.TestGroupSelection (
 Num int not null primary key,
 Label varchar(20) not null
 )
 
-if object_id('LEGACYSPED.SCAltSelection') is not null
-drop table LEGACYSPED.SCAltSelection
+if object_id('x_LEGACYACCOM.SCAltSelection') is not null
+drop table x_LEGACYACCOM.SCAltSelection
 go
 
-create table LEGACYSPED.SCAltSelection (
+create table x_LEGACYACCOM.SCAltSelection (
 Num int not null primary key,
 Label varchar(20) not null
 )
 
-if object_id('LEGACYSPED.TakingTest') is not null
-drop table LEGACYSPED.TakingTest
+if object_id('x_LEGACYACCOM.TakingTest') is not null
+drop table x_LEGACYACCOM.TakingTest
 go
 
-create table LEGACYSPED.TakingTest (
+create table x_LEGACYACCOM.TakingTest (
 Num int not null primary key,
 Label varchar(20) not null
 )
 
-if object_id('LEGACYSPED.ConditionsSelection') is not null
-drop table LEGACYSPED.ConditionsSelection
+if object_id('x_LEGACYACCOM.ConditionsSelection') is not null
+drop table x_LEGACYACCOM.ConditionsSelection
 go
 
-create table LEGACYSPED.ConditionsSelection (
+create table x_LEGACYACCOM.ConditionsSelection (
 Num int not null primary key,
 Label varchar(20) not null
 )
 
 
 -- test group selections (PASS, EOC, ELDA, GTTP) 
-insert LEGACYSPED.TestGroupSelection values (0, 'not selected')
-insert LEGACYSPED.TestGroupSelection values (1, 'Yes')
-insert LEGACYSPED.TestGroupSelection values (2, 'No')
-insert LEGACYSPED.TestGroupSelection values (3, 'NA')
+insert x_LEGACYACCOM.TestGroupSelection values (0, 'not selected')
+insert x_LEGACYACCOM.TestGroupSelection values (1, 'Yes')
+insert x_LEGACYACCOM.TestGroupSelection values (2, 'No')
+insert x_LEGACYACCOM.TestGroupSelection values (3, 'NA')
 
 -- SC Alternate test (as opposed to the regular test)
-insert LEGACYSPED.SCAltSelection values (0, 'not selected')
-insert LEGACYSPED.SCAltSelection values (1, 'Yes')
-insert LEGACYSPED.SCAltSelection values (2, 'No')
-insert LEGACYSPED.SCAltSelection values (3, 'NA')
+insert x_LEGACYACCOM.SCAltSelection values (0, 'not selected')
+insert x_LEGACYACCOM.SCAltSelection values (1, 'Yes')
+insert x_LEGACYACCOM.SCAltSelection values (2, 'No')
+insert x_LEGACYACCOM.SCAltSelection values (3, 'NA')
 
 -- Taking the test or not (this is a checkbox 0 is unchecked, 1 is checked, indicating Yes, taking test)
-insert LEGACYSPED.TakingTest values (0, 'No')
-insert LEGACYSPED.TakingTest values (1, 'Yes')
+insert x_LEGACYACCOM.TakingTest values (0, 'No')
+insert x_LEGACYACCOM.TakingTest values (1, 'Yes')
 
 -- Conditions. For each test, user should select standard (with or w/o accoms) or non-standard
-insert LEGACYSPED.ConditionsSelection values (0, 'not selected')
-insert LEGACYSPED.ConditionsSelection values (1, 'Std')
-insert LEGACYSPED.ConditionsSelection values (2, 'Std w/ Accom')
-insert LEGACYSPED.ConditionsSelection values (3, 'Non-Standard')
+insert x_LEGACYACCOM.ConditionsSelection values (0, 'not selected')
+insert x_LEGACYACCOM.ConditionsSelection values (1, 'Std')
+insert x_LEGACYACCOM.ConditionsSelection values (2, 'Std w/ Accom')
+insert x_LEGACYACCOM.ConditionsSelection values (3, 'Non-Standard')
 go
 
-if object_id ('LEGACYSPED.LOGIC_EOTestParticipation') is not null
-drop view LEGACYSPED.LOGIC_EOTestParticipation
+if object_id ('x_LEGACYACCOM.LOGIC_EOTestParticipation') is not null
+drop view x_LEGACYACCOM.LOGIC_EOTestParticipation
 go
 
 
-create view LEGACYSPED.LOGIC_EOTestParticipation
+create view x_LEGACYACCOM.LOGIC_EOTestParticipation
 as
 select t.TestGroup, 
 	t.GroupYNna, t.GroupYNnaDesc, 
@@ -146,13 +146,13 @@ select TestGroup, EOTestCode,
 		end --- TEST GROUP
 from (
 	select TestGroup = case when EnrichTestName like 'SC PASS %' then 'PASS' when EnrichTestName like 'EOC %' then 'EOC' when EnrichTestName = 'ELDA' then 'ELDA' when EOTestCode = 'GTTP' then 'GTTP' end, m.EOTestCode
-	from LEGACYSPED.MAP_TestDefID m
+	from x_LEGACYACCOM.MAP_TestDefID m
 	where 1=1
 	) t 
-cross join LEGACYSPED.TestGroupSelection tg
-cross join LEGACYSPED.SCAltSelection alt
-cross join LEGACYSPED.TakingTest tkt
-cross join LEGACYSPED.ConditionsSelection cnd
+cross join x_LEGACYACCOM.TestGroupSelection tg
+cross join x_LEGACYACCOM.SCAltSelection alt
+cross join x_LEGACYACCOM.TakingTest tkt
+cross join x_LEGACYACCOM.ConditionsSelection cnd
 -- there is a cleaner way to assure logical combinations, but for sake of time we'll just exclude some invalid or unimportant ones
 where 1=1
 and not (alt.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
@@ -161,7 +161,7 @@ and not (alt.num = 1 and TestGroup <> 'PASS') -- Alt only applicable to PASS
 --and not (t.TestGroup in ('ELDA', 'GTTP', 'EOC') and alt.num <> 0) -- This is not a test group, we just pretend it is
 and not (alt.Num = 1 and t.EOTestCode = 'AC7') -- there is no Writing for the SC Alt
 ) t
-left join LEGACYSPED.StateDistrictParticipationDef p on t.Participation = p.ParticipationTypeCode
+left join x_LEGACYACCOM.StateDistrictParticipationDef p on t.Participation = p.ParticipationTypeCode
 where 1=1
 -- TakingTestGroupDesc = 'Yes'
 -- and t.GroupYNna = 1
@@ -179,6 +179,6 @@ group by t.TestGroup,
 go
 
 
--- select * from LEGACYSPED.MAP_TestDefID
+-- select * from x_LEGACYACCOM.MAP_TestDefID
 
 

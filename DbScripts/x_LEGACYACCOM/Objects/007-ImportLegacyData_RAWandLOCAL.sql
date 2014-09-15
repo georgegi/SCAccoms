@@ -94,7 +94,7 @@ left join '+isnull(@LinkedserverAddress,'linkservhere')+'.'+isnull(@DatabaseName
  EXEC (@insertqam)
 
 ------------------------------------------------------------ populate local table for district test accoms import
-
+DELETE x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
 
 insert x_LEGACYACCOM.EO_DistrictTestAccomm_LOCAL 
 select m.IEPRefID, SubRefID = a.IEPAccomSeq,
