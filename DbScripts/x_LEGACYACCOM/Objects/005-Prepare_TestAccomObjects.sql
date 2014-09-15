@@ -2,7 +2,8 @@ set nocount on;
 
 declare @importPrgSections table (Enabled bit not null, SectionDefName varchar(100) not null, SectionDefID uniqueidentifier not null)
 insert @importPrgSections values (1,'IEP Assessments','A0C84AE0-4F46-4DA5-9F90-D57AB212ED64')
-insert @importPrgSections values (1,'Accommodations & Modifications','4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C')
+-- insert @importPrgSections values (1,'Accommodations & Modifications','4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C') -- wrong DefID 
+insert @importPrgSections values (1,'Accommodations & Modifications','43CD5045-8083-4534-AD66-A81C43A42F26')
 
 set nocount off;
 
@@ -115,7 +116,9 @@ CREATE TABLE x_LEGACYACCOM.MAP_FormInputValueID (
 go
 
 
-
+IF EXISTS (SELECT 1 FROM sys.schemas s JOIN sys.objects o on s.schema_id = o.schema_id WHERE s.name = 'x_LEGACYACCOM' AND o.name = 'Transform_PrgSectionFormInstance')
+DROP VIEW x_LEGACYACCOM.Transform_PrgSectionFormInstance
+GO
 -- we create the objects in the required order 
 CREATE VIEW x_LEGACYACCOM.Transform_PrgSectionFormInstance
 AS
@@ -187,6 +190,8 @@ from x_LEGACYACCOM.Transform_PrgSectionFormInstance f join
 	x_LEGACYACCOM.FormInputFields v on (f.FormTemplateID = v.TemplateID or f.HeaderFormTemplateID = v.TemplateID ) and v.InputItemType = 'Text' join
 	(
 		select Item = 'IEP', * from x_LEGACYACCOM.ConvertedAssessmentsTextsPivot 
+		union all
+		select Item = 'IEP', * from x_LEGACYACCOM.ClassroomAccomModTextsPivot
 
 	) tp on f.IEPRefID = tp.IEPRefID and v.InputFieldID = tp.InputFieldID and f.Item = tp.Item left join -- 52886
 	x_LEGACYACCOM.MAP_FormInputValueID mv on tp.InputFieldID = mv.InputFieldID 
@@ -223,7 +228,7 @@ select f.Item,
 from x_LEGACYACCOM.Transform_PrgSectionFormInstance f join 
 	x_LEGACYACCOM.FormInputFields v on (f.FormTemplateID = v.TemplateID or f.HeaderFormTemplateID = v.TemplateID ) and v.InputItemType = 'SingleSelect' join
 	(
-		select Item = 'IEP', * from x_LEGACYACCOM.ConvertedAssessmentsSingleSelectPivot 
+		select Item = 'IEP', * from x_LEGACYACCOM.ConvertedAssessmentsSingleSelectsPivot 
 
 	) tp on f.IEPRefID = tp.IEPRefID and v.InputFieldID = tp.InputFieldID and f.Item = tp.Item left join -- 52886
 	x_LEGACYACCOM.MAP_FormInputValueID mv on tp.InputFieldID = mv.InputFieldID 
@@ -232,6 +237,45 @@ from x_LEGACYACCOM.Transform_PrgSectionFormInstance f join
 		left join 
 	dbo.FormInputTextValue tv on mv.DestID = tv.Id
 go
+
+
+
+
+if object_id('x_LEGACYACCOM.Transform_FormInputFlagValue', 'V') is not null
+DROP VIEW x_LEGACYACCOM.Transform_FormInputFlagValue
+GO
+
+create view x_LEGACYACCOM.Transform_FormInputFlagValue
+as
+select f.Item,
+	f.IEPRefID, 
+	tp.SubRefID,
+	v.TemplateID,
+	v.InputFieldID,
+	tp.Sequence, 
+	v.InputItemCode, 
+	v.InputItemLabel, 
+	v.InputItemType, 
+	f.FormInstanceID, 
+	IntervalID = f.FormInstanceIntervalID,
+	mv.DestID,
+	Value = tp.Value 
+	-- select f.*
+from x_LEGACYACCOM.Transform_PrgSectionFormInstance f join 
+	x_LEGACYACCOM.FormInputFields v on f.FormTemplateID = v.TemplateID and v.InputItemType = 'Flag' join 
+	(
+		select Item = 'IEP', * from x_LEGACYACCOM.ClassroomAccomModFlagsPivot 
+
+	) tp on f.IEPRefID = tp.IEPRefID and v.InputFieldID = tp.InputFieldID and f.Item = tp.Item left join -- 52886
+	x_LEGACYACCOM.MAP_FormInputValueID mv on tp.InputFieldID = mv.InputFieldID 
+		and f.FormInstanceIntervalID = mv.IntervalID 
+		and tp.Sequence = mv.Sequence
+		left join 
+	dbo.FormInputFlagValue tv on mv.DestID = tv.Id
+go
+
+
+
 
 
 if object_id('x_LEGACYACCOM.Transform_FormInputValue', 'V') is not null
@@ -246,9 +290,9 @@ as
 select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar(max), v.Value)
 from x_LEGACYACCOM.Transform_FormInputTextValue v
 union all
---select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar(max), v.Value)
---from x_LEGACYACCOM.Transform_FormInputFlagValue v
---union all
+select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar(max), v.Value)
+from x_LEGACYACCOM.Transform_FormInputFlagValue v
+union all
 select v.Item, v.IEPRefID, v.SubRefID, v.DestID, v.IntervalID, InputFieldID = v.InputFieldID, v.Sequence, v.InputItemCode, v.InputItemLabel, v.InputItemType, Value = convert(varchar(max), v.Value)
 from x_LEGACYACCOM.Transform_FormInputSingleSelectValue v
 go

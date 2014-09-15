@@ -90,11 +90,11 @@ left join FormInputFlagValue x on t.DestID = x.id
 where x.id is null
 
 -- ##########################################################################################################################################################
-insert FormInputDateValue 
-select t.DestID, t.Value
-from x_LEGACYACCOM.Transform_FormInputDateValue t
-left join FormInputDateValue x on t.DestID = x.id
-where x.id is null
+--insert FormInputDateValue 
+--select t.DestID, t.Value
+--from x_LEGACYACCOM.Transform_FormInputDateValue t
+--left join FormInputDateValue x on t.DestID = x.id
+--where x.id is null
 
 -- ##########################################################################################################################################################
 insert FormInputSingleSelectValue 
@@ -147,17 +147,6 @@ and x.ID is null
 
 
 
-update s set FormInstanceID = mfi.FormInstanceID, HeaderFormInstanceID = mfi.HeaderFormInstanceID
--- select CurrentFormInstanceID = s.FormInstanceID, mfi.FormInstanceID, CurrentHeaderFormInstanceID = s.HeaderFormInstanceID, mfi.HeaderFormInstanceID
-from LEGACYSPED.MAP_IEPStudentRefID m
-left join dbo.PrgItem i on m.DestID = i.ID
-left join dbo.PrgVersion v on i.ID = v.ItemID 
-left join dbo.PrgSection s on i.ID = s.ItemID 
-left join dbo.PrgSectionDef sd on s.DefID = sd.ID
-join x_LEGACYACCOM.MAP_FormInstanceID mfi on m.IepRefID = mfi.ItemRefID and s.DefID = mfi.SectionDefID
-where isnull(mfi.FormInstanceID, mfi.HeaderFormInstanceID) is not null
-and isnull(s.FormInstanceID, s.HeaderFormInstanceID) is null
-
 
 -- ##########################################################################################################################################################
 -- versioned
@@ -176,6 +165,23 @@ from LEGACYSPED.Transform_PrgSection t
 left join PrgSection x on t.DestID = x.id
 where t.VersionID is null 
 and x.ID is null
+
+
+-- Muthu: I thought this was already moved below the inserts.???? I moved it on 9/14/2014 at 10:30 pm eastern time.  GG
+update s set FormInstanceID = mfi.FormInstanceID, HeaderFormInstanceID = mfi.HeaderFormInstanceID
+-- select CurrentFormInstanceID = s.FormInstanceID, mfi.FormInstanceID, CurrentHeaderFormInstanceID = s.HeaderFormInstanceID, mfi.HeaderFormInstanceID
+from LEGACYSPED.MAP_IEPStudentRefID m
+left join dbo.PrgItem i on m.DestID = i.ID
+left join dbo.PrgVersion v on i.ID = v.ItemID 
+left join dbo.PrgSection s on i.ID = s.ItemID 
+left join dbo.PrgSectionDef sd on s.DefID = sd.ID
+join x_LEGACYACCOM.MAP_FormInstanceID mfi on m.IepRefID = mfi.ItemRefID and s.DefID = mfi.SectionDefID
+where isnull(mfi.FormInstanceID, mfi.HeaderFormInstanceID) is not null
+and isnull(s.FormInstanceID, s.HeaderFormInstanceID) is null
+
+
+
+
 
 ---- ##########################################################################################################################################################
 
