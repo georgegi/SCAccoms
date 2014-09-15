@@ -104,26 +104,25 @@ left join FormInputSingleSelectValue x on t.DestID = x.id
 where x.id is null
 
 
-
 ---- ##########################################################################################################################################################
 -- MAP table has already been inserted
 insert LEGACYSPED.MAP_PrgSectionID (defid, versionid, destid)
 select t.DefID, t.VersionID, DestID = newid()
 from LEGACYSPED.Transform_PrgSection t 
-left join LEGACYSPED.MAP_PrgSectionID x on t.destid = x.destid 
+join PrgSectiondef secd on t.defid = secd.ID and secd.IsVersioned = 1
+left join LEGACYSPED.MAP_PrgSectionID x on t.destid = x.destid and t.VersionID = x.VersionID 
 where t.VersionID is not null ---- non versioned uses a different map
-and x.destid is null
+and x.destid is null  
 
 
 -- looks like this is already inserted
 insert LEGACYSPED.MAP_PrgSectionID_NonVersioned (DefID, ItemID, DestID)
-select t.DefID, t.VersionID, DestID = newid()
+select t.DefID, t.ItemID, DestID = newid()
 from LEGACYSPED.Transform_PrgSection t 
-left join LEGACYSPED.MAP_PrgSectionID x on t.destid = x.destid 
-where t.VersionID is not null ---- non versioned uses a different map
-and x.destid is null
-
-
+join PrgSectiondef secd on t.defid = secd.ID and secd.IsVersioned = 0
+left join LEGACYSPED.MAP_PrgSectionID_NonVersioned x on  t.destid = x.destid and t.ItemID = x.ItemID 
+where t.ItemID is not null ---- non versioned uses a different map
+and x.destid is null 
 
 ---- ##########################################################################################################################################################
 -- footer
@@ -180,6 +179,17 @@ where isnull(mfi.FormInstanceID, mfi.HeaderFormInstanceID) is not null
 and isnull(s.FormInstanceID, s.HeaderFormInstanceID) is null
 
 
+
+insert IepAccommodations (ID, Explanation, TrackDetails, TrackForAssessments, NoAccommodationsRequired, NoModificationsRequired)
+select t.DestID, t.Explanation, t.TrackDetails, t.TrackForAssessments, t.NoAccommodationsRequired, t.NoModificationsRequired
+from x_LEGACYACCOM.Transform_IepAccommodations t
+left join IepAccommodations a on t.DestID = a.ID
+where a.id is null
+
+insert IepAssessments  -- Need to check this!!
+select s.DestID,NULL, 0
+from LEGACYSPED.MAP_PrgSectionID_NonVersioned s 
+where s.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
 
 
 
