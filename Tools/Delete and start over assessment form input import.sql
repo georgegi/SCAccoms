@@ -113,17 +113,17 @@ delete s
 -- select * 
 from LEGACYSPED.MAP_PrgSectionID m
 join PrgSection s on m.DestID = s.ID
-where s.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+where s.DefID = '43CD5045-8083-4534-AD66-A81C43A42F26'
 
 delete m
 -- select * 
 from LEGACYSPED.MAP_PrgSectionID m
-where m.DefID = '4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C'
+where m.DefID = '43CD5045-8083-4534-AD66-A81C43A42F26'
 
 delete m
 -- select m.*
 from LEGACYSPED.ImportPrgSections m 
-where m.SectionDefID in ('4C01FA56-D3F6-47B1-BCDF-EBE7AB08A57C', 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64')
+where m.SectionDefID in ('43CD5045-8083-4534-AD66-A81C43A42F26', 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64')
 
 
 
