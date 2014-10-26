@@ -113,7 +113,12 @@ select m.IEPRefID, SubRefID = a.IEPAccomSeq,
 			when 0 then NULL
 			else '<ul>'+acc.Accommodations+'</ul>' -- 1 Accommodations, 2 Modifications (non-standard means Alternate district assessment, with modifications, per Enrich UI drop-down)
 		end,
-	Sequence = 0 -- hard coding to cheat here - we only have 1 district assessment in EO
+	Sequence = (
+		select count(*) 
+		from x_LEGACYACCOM.EO_IEPAccomModTbl_RAW c 
+		where a.GStudentID = c.GStudentID 
+		and a.IEPAccomSeq > c.IEPAccomSeq
+		) -- cannot cheat anymore we were getting more than one result per IEP at Oconee.
 from LEGACYSPED.MAP_IEPStudentRefID m
 join x_LEGACYACCOM.EO_IEPAccomModTbl_RAW a on m.StudentRefID = a.GStudentID
 join x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq and isnull(a2.del_flag,0)=0 and isnull(a.del_flag,0)=0
@@ -133,8 +138,11 @@ join (
 
 insert  x_LEGACYACCOM.ClassroomAccomMod_LOCAL
 -- using this for performance when we union all of the forminputfields together
-select IEPRefID = IEPComplSeqNum, SubRefID = IEPModSeq, ModifyYN = ProgramModify, Accoms = SupplementAids, Mods = Modifications
-from x_LEGACYACCOM.EO_ICIEPModTbl_SC_RAW r
+select IEPRefID = r.IEPComplSeqNum, SubRefID = r.IEPModSeq, ModifyYN = ProgramModify, Accoms = SupplementAids, Mods = Modifications
+from x_LEGACYACCOM.EO_ICIEPModTbl_SC_RAW r join
+(Select IEPComplSeqNum,MAX(IEPModSeq) IEPModSeq 
+ from x_LEGACYACCOM.EO_ICIEPModTbl_SC_RAW Group by IEPComplSeqNum )rmax 
+on rmax.IEPComplSeqNum = r.IEPComplSeqNum and r.IEPModSeq = rmax.IEPModSeq
 -- where IEPModSeq is not null -- we should not use a left join for this view. handle missing later.
 
  
