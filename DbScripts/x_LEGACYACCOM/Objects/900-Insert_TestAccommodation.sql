@@ -189,7 +189,7 @@ where a.id is null
 insert IepAssessments  -- Need to check this!!
 select s.DestID,NULL, 0
 from LEGACYSPED.MAP_PrgSectionID_NonVersioned s 
-where s.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64'
+where s.DefID = '82AFDE84-49C0-45D0-B13E-201151CE90CC'
 
 
 
