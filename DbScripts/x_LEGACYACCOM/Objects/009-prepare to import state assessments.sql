@@ -244,11 +244,12 @@ go
 
 --create a pre-transform view of the EO test data
 
-if object_id('x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL') is not null
-drop view x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL
+if object_id('x_LEGACYACCOM.Transform_IepTestParticipation') is not null
+drop view x_LEGACYACCOM.Transform_IepTestParticipation
 go
 
-create view x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL
+--create view x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL -- drop view x_LEGACYACCOM.EO_StateAccomParticipation_LOCAL
+create view x_LEGACYACCOM.Transform_IepTestParticipation
 as
 with participationCTE
 as (
@@ -285,7 +286,9 @@ join x_LEGACYACCOM.EO_IEPAccomModTbl_SC_RAW a2 on a.IEPAccomSeq = a2.IEPAccomSeq
 
 select 
 	s.StudentLocalID, s.Firstname, s.Lastname, s.GradeLevelCode,
-	stp.IepRefID, stp.IEPAccomSeq,
+	stp.IepRefID, 
+	TestParticipationRefID = stp.IEPAccomSeq,
+	mtp.DestID,
 	InstanceID = isnull(a.DestID, av.DestID), 
 	stp.TestGroup, 
 	stp.EOTestCode, td.EnrichTestName, td.TestDefID,
@@ -389,5 +392,6 @@ left join x_LEGACYACCOM.StateDistrictParticipationDef p on logic.Participation =
 left join LEGACYSPED.MAP_PrgSectionID_NonVersioned a on ms.DestID = a.ItemID and a.DefID = '82AFDE84-49C0-45D0-B13E-201151CE90CC' -- need to handle the case where someone made this a versioned section
 left join LEGACYSPED.MAP_PrgVersionID v on ms.IEPRefID = v.IEPRefID 
 left join LEGACYSPED.MAP_PrgSectionID av on v.DestID = av.VersionID and av.DefID = '82AFDE84-49C0-45D0-B13E-201151CE90CC' 
+left join x_LEGACYACCOM.MAP_IepTestParticipationID mtp on stp.IEPAccomSeq = mtp.TestParticipationRefID and td.TestDefID = mtp.TestDefID
 go
 
