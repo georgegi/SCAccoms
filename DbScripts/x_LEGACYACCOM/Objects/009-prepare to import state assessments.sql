@@ -389,9 +389,9 @@ left join x_LEGACYACCOM.LOGIC_EOTestParticipation logic on
 	stp.TestYN = logic.TestYN and 
 	stp.Conditions = logic.Conditions
 left join x_LEGACYACCOM.StateDistrictParticipationDef p on logic.Participation = p.ParticipationType
-left join LEGACYSPED.MAP_PrgSectionID_NonVersioned a on ms.DestID = a.ItemID and a.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64' -- need to handle the case where someone made this a versioned section
+left join LEGACYSPED.MAP_PrgSectionID_NonVersioned a on ms.DestID = a.ItemID and a.DefID = '82AFDE84-49C0-45D0-B13E-201151CE90CC' -- need to handle the case where someone made this a versioned section
 left join LEGACYSPED.MAP_PrgVersionID v on ms.IEPRefID = v.IEPRefID 
-left join LEGACYSPED.MAP_PrgSectionID av on v.DestID = av.VersionID and av.DefID = 'A0C84AE0-4F46-4DA5-9F90-D57AB212ED64' 
+left join LEGACYSPED.MAP_PrgSectionID av on v.DestID = av.VersionID and av.DefID = '82AFDE84-49C0-45D0-B13E-201151CE90CC' 
 left join x_LEGACYACCOM.MAP_IepTestParticipationID mtp on stp.IEPAccomSeq = mtp.TestParticipationRefID and td.TestDefID = mtp.TestDefID
 go
 
